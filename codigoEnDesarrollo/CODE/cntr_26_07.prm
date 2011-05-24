@@ -1,0 +1,31 @@
+NAMES
+
+END
+
+SECTIONS
+      /* List of all sections specified on the "Build options" tab */
+      RAM_1200  =  READ_WRITE           0x00001031 TO 0x000017FF;
+      ROM_4000  =  READ_ONLY            0x00004000 TO 0x000041FF;   //511
+      //programador
+      ROM_6000  =  READ_ONLY 						0x00005500 TO 0x00007FFF; 
+      // no Programador
+      //ROM_6000  =  READ_ONLY 						0x00004E00 TO 0x00007FFF;
+      //ROM_6000  =  READ_ONLY 						0x00004200 TO 0x00007FFF;   //12287
+      ROM_C000  =  READ_ONLY            0x0000C000 TO 0x0000FEFF;   //16127
+      ROM_FF10  =  READ_ONLY            0x0000FF10 TO 0x0000FF7F;   //111
+      RAM_1000  =  READ_WRITE           0x00001000 TO 0x00001030;
+END
+
+PLACEMENT
+      DEFAULT_RAM                      INTO RAM_1200;
+      MYDATA													 INTO RAM_1000;
+      PARAMETERS_PAGE									 INTO ROM_4000;
+      _PRESTART, STARTUP,
+      ROM_VAR, STRINGS,
+      NON_BANKED, DEFAULT_ROM, COPY    INTO ROM_6000,ROM_C000, ROM_FF10;
+END
+
+INIT _EntryPoint                       /* The entry point of the application. This function is generated into the CPU module. */
+
+STACKSIZE 0x120                       /* Size of the system stack. Value can be changed on the "Build options" tab */
+
