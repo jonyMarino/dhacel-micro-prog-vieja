@@ -1,0 +1,14 @@
+Units and locations in library 'D:\PRINTER\Librerias\OOC\ooc\lib\ooc_bi.lib'
+Unit name                                                                                        size     from       to
+D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o      8940      103     9043
+
+EXPORTED OBJECTS
+____vtbl__OutputStream                   O   (D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o)
+__as__12OutputStreamFRC12OutputStream    F   (D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o)
+__ct__12OutputStreamFRC12OutputStream    F   (D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o)
+__ct__12OutputStreamFv                   F   (D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o)
+close__12OutputStreamFv                  F   (D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o)
+flush__12OutputStreamFv                  F   (D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o)
+printf                                   I   (D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o)
+write__12OutputStreamFPCSc               F   (D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o)
+write__12OutputStreamFUc                 F   (D:\PRINTER\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\C_Mb_no_float\ObjectCode\OutputStream.cpp.o)

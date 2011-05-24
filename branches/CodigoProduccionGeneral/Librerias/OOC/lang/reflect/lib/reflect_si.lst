@@ -1,0 +1,13 @@
+Units and locations in library 'D:\Jony\HCS12\Librerias\OOC\lang\reflect\lib\reflect_si.lib'
+Unit name                                                                                      size     from       to
+D:\Jony\HCS12\Librerias\OOC\lang\reflect\reflect_Data\C_Ms_no_float\ObjectCode\Method.c.o      8188      116     8304
+
+EXPORTED OBJECTS
+Method                   O   (D:\Jony\HCS12\Librerias\OOC\lang\reflect\reflect_Data\C_Ms_no_float\ObjectCode\Method.c.o)
+Method_constructor       F   (D:\Jony\HCS12\Librerias\OOC\lang\reflect\reflect_Data\C_Ms_no_float\ObjectCode\Method.c.o)
+Method_defConstructor    F   (D:\Jony\HCS12\Librerias\OOC\lang\reflect\reflect_Data\C_Ms_no_float\ObjectCode\Method.c.o)
+Method_execute           F   (D:\Jony\HCS12\Librerias\OOC\lang\reflect\reflect_Data\C_Ms_no_float\ObjectCode\Method.c.o)
+Method_getMethod         F   (D:\Jony\HCS12\Librerias\OOC\lang\reflect\reflect_Data\C_Ms_no_float\ObjectCode\Method.c.o)
+Method_getObj            F   (D:\Jony\HCS12\Librerias\OOC\lang\reflect\reflect_Data\C_Ms_no_float\ObjectCode\Method.c.o)
+Method_setMethod         F   (D:\Jony\HCS12\Librerias\OOC\lang\reflect\reflect_Data\C_Ms_no_float\ObjectCode\Method.c.o)
+Object                   I   (D:\Jony\HCS12\Librerias\OOC\lang\reflect\reflect_Data\C_Ms_no_float\ObjectCode\Method.c.o)
