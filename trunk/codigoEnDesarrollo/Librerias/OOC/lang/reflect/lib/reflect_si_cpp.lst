@@ -1,0 +1,11 @@
+Units and locations in library 'D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\lang\reflect\lib\reflect_si_cpp.lib'
+Unit name                                                                                                                                  size     from       to
+D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\lang\reflect\reflect_hcs12_cpp_Data\C_Ms_no_float\ObjectCode\Method.cpp.o      8011      155     8166
+
+EXPORTED OBJECTS
+__as__6MethodFRC6Method      F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\lang\reflect\reflect_hcs12_cpp_Data\C_Ms_no_float\ObjectCode\Method.cpp.o)
+__ct__6MethodFPFPv_vPv       F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\lang\reflect\reflect_hcs12_cpp_Data\C_Ms_no_float\ObjectCode\Method.cpp.o)
+__ct__6MethodFRC6Method      F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\lang\reflect\reflect_hcs12_cpp_Data\C_Ms_no_float\ObjectCode\Method.cpp.o)
+execute__6MethodFv           F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\lang\reflect\reflect_hcs12_cpp_Data\C_Ms_no_float\ObjectCode\Method.cpp.o)
+setMethod__6MethodFPFPv_v    F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\lang\reflect\reflect_hcs12_cpp_Data\C_Ms_no_float\ObjectCode\Method.cpp.o)
+setObj__6MethodFPv           F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\lang\reflect\reflect_hcs12_cpp_Data\C_Ms_no_float\ObjectCode\Method.cpp.o)

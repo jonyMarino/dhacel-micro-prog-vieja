@@ -1,0 +1,14 @@
+Units and locations in library 'D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\lib_cpp\ooc.lib'
+Unit name                                                                                                                                      size     from       to
+D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o      8812      139     8951
+
+EXPORTED OBJECTS
+____vtbl__OutputStream                   O   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o)
+__as__12OutputStreamFRC12OutputStream    F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o)
+__ct__12OutputStreamFRC12OutputStream    F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o)
+__ct__12OutputStreamFv                   I   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o)
+close__12OutputStreamFv                  F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o)
+flush__12OutputStreamFv                  F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o)
+printf                                   I   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o)
+write__12OutputStreamFPCSc               F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o)
+write__12OutputStreamFUc                 F   (D:\versionR51\microsdhacel\soft micros\Codigo\Librerias\OOC\ooc\ooc_hcs12_cpp_Data\P&E_Multilink_CyclonePro\ObjectCode\OutputStream.cpp.o)

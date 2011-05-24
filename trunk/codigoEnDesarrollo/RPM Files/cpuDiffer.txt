@@ -1,0 +1,41 @@
+Cpu.c
+
+
+Puls:
+
+  /* OC7M: OC7M7=0,OC7M0=0 */
+  clrReg8Bits(OC7M, 129);               
+
+
+InpCap:
+  /* OC7M: OC7M0=0 */
+  clrReg8Bits(OC7M, 1); 
+
+Puls:
+
+/* TCTL1: OM7=0,OL7=0,OM6=0,OL6=0,OM5=0,OL5=0,OM4=0,OL4=0 */
+  setReg8(TCTL1, 0);                    
+  /* TIE: C6I=0,C5I=0,C4I=0,C1I=0,C0I=1 */
+  clrSetReg8Bits(TIE, 114, 1);          
+  /* TIOS: IOS7=1,IOS6=1,IOS5=1,IOS4=1,IOS1=1,IOS0=1 */
+  setReg8Bits(TIOS, 243);
+
+InpCap:
+
+  /* TCTL1: OM6=0,OL6=0,OM5=0,OL5=0,OM4=0,OL4=0 */
+  clrReg8Bits(TCTL1, 63);               
+  /* TCTL3: EDG7B=0,EDG7A=0 */
+  clrReg8Bits(TCTL3, 192);              
+  /* TIE: C7I=0,C6I=0,C5I=0,C4I=0,C1I=0,C0I=1 */
+  clrSetReg8Bits(TIE, 242, 1);          
+  /* TIOS: IOS7=0,IOS6=1,IOS5=1,IOS4=1,IOS1=1,IOS0=1 */
+  clrSetReg8Bits(TIOS, 128, 115);       
+
+Puls:
+
+  /* PACTL: ??=0,PAEN=0,PAMOD=0,PEDGE=0,CLK1=0,CLK0=0,PAOVI=0,PAI=0 */
+  setReg8(PACTL, 0);                    
+              
+/* PACNT: BIT15=0,BIT14=0,BIT13=0,BIT12=0,BIT11=0,BIT10=0,BIT9=0,BIT8=0,BIT7=0,BIT6=0,BIT5=0,BIT4=0,BIT3=0,BIT2=0,BIT1=0,BIT0=0 */
+  setReg16(PACNT, 0);                   
+
