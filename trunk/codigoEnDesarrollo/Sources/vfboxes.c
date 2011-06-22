@@ -15,6 +15,37 @@ extern PunteroF PtrTmp;
 
 #ifdef VF
 
+#ifdef SIMCIC_PROG
+volatile const int PRomVF[11]@(FLASH_VF_START) ={  //valor iniciales
+10, //cantidad de programas
+1,  //etapas progr 1
+2,  //etapas progr 2
+1,  //etapas progr 3
+2,  //etapas progr 4
+2,  //etapas progr 5
+6,  //etapas progr 6
+5,  //etapas progr 7
+5,  //etapas progr 8
+1,  //etapas progr 9
+1,  //etapas progr 10
+};
+
+const ParamVF  DatosVF[MAX_PROGRAMAS_VF][MAX_ETAPAS_VF] @(FLASH_VF_START+24)={		 //Programas guardados en FLASH
+/*etapas:*/
+/* 1          2       3      4       5       6       7       8       9      10   */
+40,780,15, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,   //parametros del programa 1
+30,400,20, 40,1010,15, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 2
+30,1020,10, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 3 
+30,400,10, 40,1260,15, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 4
+40,580,10, 80,815,10, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 5  
+40,580,10, 60,700,10, 80,815,10, 500,580,60, 10,450,60, 10,350,60, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 6
+40,580,10, 50,740,15, 500,580,120, 10,450,60, 10,350,1, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 7
+40,580,15, 50,760,1, 500,580,120, 10,450,60, 10,350,1, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 8 
+1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 9
+1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 10 
+};
+
+#else
 volatile const int PRomVF[11]@(FLASH_VF_START) ={  //valor iniciales
 10, //cantidad de programas
 1,  //etapas progr 1
@@ -44,7 +75,7 @@ const ParamVF  DatosVF[MAX_PROGRAMAS_VF][MAX_ETAPAS_VF] @(FLASH_VF_START+24)={		
 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0, 1,35,0,    //parametros del programa 10 
 };
 
-  
+#endif  
 
 #pragma CONST_SEG DEFAULT 
 #pragma STRING_SEG DEFAULT
@@ -85,10 +116,12 @@ extern const Titulo ProgramaEnAccion;
 int velocidadVF,temperaturaVF,tiempoVF;
 #ifdef VF_PROG
 int nroProgEnAccion=0;
+int crearProg=0;
 #else
 int nroProgEnAccion=1;
+int crearProg=1;
 #endif
-int cantEtapas=1,crearProg=0;
+int cantEtapas=1;
 unsigned char etapasActual=0;
 int proxBox=0;
 char textDincVel[26];
@@ -113,35 +146,35 @@ void cartelVelHandler(void){
 #ifdef MSJ_CORTO2
       
        textDincVel[0]=' '; 
-       textDincVel[1]=' '; 
-       textDincVel[2]='r';
-       textDincVel[3]='m';
-       textDincVel[4]='P';
+       textDincVel[1]='r';
+       textDincVel[2]='m';
+       textDincVel[3]='P';
        if((etapasActual+1)/10){
-          textDincVel[5]=((etapasActual+1)/10+'0'); 
-          textDincVel[6]=((etapasActual+1)%10+'0');
+          textDincVel[4]=((etapasActual+1)/10+'0'); 
+          textDincVel[5]=((etapasActual+1)%10+'0');
       } else  {  
-          textDincVel[5]=((etapasActual+1)+'0');
-          textDincVel[6]=' ';   
+          textDincVel[4]=((etapasActual+1)+'0');
+          textDincVel[5]=' ';   
       }
        
-       textDincVel[7]=' ';
-       textDincVel[8]='v';
-       textDincVel[9]='E';
-       textDincVel[10]='L';
-       textDincVel[11]='o';
-       textDincVel[12]='c';
-       textDincVel[13]='i';
-       textDincVel[14]='d';
-       textDincVel[15]='A';
-       textDincVel[16]='d';
-       textDincVel[17]=' ';
-       textDincVel[18]='<';
-       textDincVel[19]='C';
-       textDincVel[20]='/';  
-       textDincVel[21]='M'; 
-       textDincVel[22]='i'; 
-       textDincVel[23]='n';
+       textDincVel[6]=' ';
+       textDincVel[7]='v';
+       textDincVel[8]='E';
+       textDincVel[9]='L';
+       textDincVel[10]='o';
+       textDincVel[11]='c';
+       textDincVel[12]='i';
+       textDincVel[13]='d';
+       textDincVel[14]='A';
+       textDincVel[15]='d';
+       textDincVel[16]=' ';
+       textDincVel[17]='<';
+       textDincVel[18]='C';
+       textDincVel[19]='/';  
+       textDincVel[20]='M'; 
+       textDincVel[21]='i'; 
+       textDincVel[22]='n';
+       textDincVel[23]=' ';
        textDincVel[24]=' '; 
        textDincVel[25]='\0'; 
       
@@ -188,37 +221,35 @@ void cartelTemHandler(void){
       //"   MSt tEMPErAtUrA  <C   ",
       
        textDincTem[0]=' ';         
-       textDincTem[1]=' '; 
-       textDincTem[2]=' '; 
-       textDincTem[3]='M';
-       textDincTem[4]='S';
-       textDincTem[5]='t';
+       textDincTem[1]='M';
+       textDincTem[2]='S';
+       textDincTem[3]='t';
        if((etapasActual+1)/10){
-          textDincTem[6]=((etapasActual+1)/10+'0'); 
-          textDincTem[7]=((etapasActual+1)%10+'0');
+          textDincTem[4]=((etapasActual+1)/10+'0'); 
+          textDincTem[5]=((etapasActual+1)%10+'0');
       } else  {  
-          textDincTem[6]=((etapasActual+1)+'0');
-          textDincTem[7]=' ';   
+          textDincTem[4]=((etapasActual+1)+'0');
+          textDincTem[5]=' ';   
       }
        
-       textDincTem[8]=' ';
-       textDincTem[9]='t';
-       textDincTem[10]='E';
-       textDincTem[11]='M';
-       textDincTem[12]='P';
-       textDincTem[13]='E';
-       textDincTem[14]='r';
-       textDincTem[15]='A';
-       textDincTem[16]='t';
-       textDincTem[17]='U';
-       textDincTem[18]='r';
-       textDincTem[19]='A';
-       textDincTem[20]=' ';
-       textDincTem[21]='<';
-       textDincTem[22]='C';
-       textDincTem[23]=' '; 
-       textDincTem[24]=' '; 
-       textDincTem[25]='\0'; 
+       textDincTem[6]=' ';
+       textDincTem[7]='t';
+       textDincTem[8]='E';
+       textDincTem[9]='M';
+       textDincTem[10]='P';
+       textDincTem[11]='E';
+       textDincTem[12]='r';
+       textDincTem[13]='A';
+       textDincTem[14]='t';
+       textDincTem[15]='U';
+       textDincTem[16]='r';
+       textDincTem[17]='A';
+       textDincTem[18]=' ';
+       textDincTem[19]='<';
+       textDincTem[20]='C';
+       textDincTem[21]=' '; 
+       textDincTem[22]=' '; 
+       textDincTem[23]='\0'; 
       
       
  #else      
@@ -264,37 +295,33 @@ void cartelTieHandler(void){
     #ifdef MSJ_CORTO2
      // "     MSt tiEMPo Min    ",
      
-       textDincTie[0]=' ';             
-       textDincTie[1]=' '; 
-       textDincTie[2]=' '; 
-       textDincTie[3]=' '; 
-       textDincTie[4]='M';
-       textDincTie[5]='S';
-       textDincTie[6]='t';
+       textDincTie[0]=' ';            
+       textDincTie[1]='M';
+       textDincTie[2]='S';
+       textDincTie[3]='t';
        if((etapasActual+1)/10){
-          textDincTie[7]=((etapasActual+1)/10+'0'); 
-          textDincTie[8]=((etapasActual+1)%10+'0');
+          textDincTie[4]=((etapasActual+1)/10+'0'); 
+          textDincTie[5]=((etapasActual+1)%10+'0');
       } else  {  
-          textDincTie[7]=((etapasActual+1)+'0');
-          textDincTie[8]=' ';   
+          textDincTie[4]=((etapasActual+1)+'0');
+          textDincTie[5]=' ';   
       }
        
-       textDincTie[9]=' ';
-       textDincTie[10]='t';
-       textDincTie[11]='i';
-       textDincTie[12]='E';
-       textDincTie[13]='M';
-       textDincTie[14]='P';
-       textDincTie[15]='o';
-       textDincTie[16]=' ';
+       textDincTie[6]=' ';
+       textDincTie[7]='t';
+       textDincTie[8]='i';
+       textDincTie[9]='E';
+       textDincTie[10]='M';
+       textDincTie[11]='P';
+       textDincTie[12]='o';
+       textDincTie[13]=' ';
        
-       textDincTie[17]='M';
-       textDincTie[18]='i';
-       textDincTie[19]='n'; 
-       textDincTie[20]=' '; 
-       textDincTie[21]=' '; 
-       textDincTie[22]=' ';  
-       textDincTie[23]='\0'; 
+       textDincTie[14]='M';
+       textDincTie[15]='i';
+       textDincTie[16]='n'; 
+       textDincTie[17]=' '; 
+       textDincTie[18]=' ';  
+       textDincTie[19]='\0'; 
       
     #else
        
@@ -353,10 +380,12 @@ if(Tecla=='r'){
   }
  }
  
- if (Tecla== 'k') 
+ if (Tecla== 'k') {
+  
    etapasActual=0;
-   
-
+   PasarASCII("    ",1);   //borro la pantalla una ves 
+	 ResetScroll(); 
+ }
 }
 
 void TemperaturaHandler(void){
@@ -375,9 +404,12 @@ if(Tecla=='r'){
   }
  }
  
- if (Tecla== 'k')
-   etapasActual=0;
+ if (Tecla== 'k') {
   
+   etapasActual=0;
+   PasarASCII("    ",1);   //borro la pantalla una ves 
+	 ResetScroll(); 
+ }
 }
 
 void TiempoHandler(void){
@@ -408,9 +440,16 @@ if(Tecla=='r'){
    EscribirWord((word)dir,((word)tiempoVF)); 
    SaveNow=TRUE;
   }
+  
+  PasarASCII("    ",1);   //borro la pantalla una ves 
+	ResetScroll(); 
  }
  
-
+if (Tecla== 'k') {
+  
+   PasarASCII("    ",1);   //borro la pantalla una ves 
+	 ResetScroll(); 
+ }
 
 }
 
@@ -442,9 +481,9 @@ const Numerico Vrmp1={
       "Ur 1",
       #else
       #ifdef GOROSITO
-      "     UEL rAMPA1 <C/HorA  " ,
+      " UEL rAMPA1 <C/HorA  " ,
       #elif defined(VF_BKR)
-      "     UEL rAMPA  <C/Min   ",
+      " UEL rAMPA  <C/Min  ",
       #else
 	    textDincVel,
 			#endif
@@ -464,7 +503,7 @@ const Numerico Tmpm1={
       "<Cm1",
       
       #elif defined(VF_BKR)
-      "     tEMPErAtUrA <C      ",
+      " tEMPErAtUrA <C  ",
       #else
 		//	"     tEMPEr MESEtA 1 <C  ",
 		  textDincTem,
@@ -493,7 +532,7 @@ const Numerico Tiem1={
       "tim1",
       
       #elif defined(VF_BKR)
-      "     tiEMPo Min          ",
+      " tiEMPo Min  ",
       #else
 			//"     tiEMPo MESEtA 1 Min ",
 			textDincTie,
@@ -515,7 +554,7 @@ const Numerico etapas={
       #ifdef MSJ_CORTO
       "EtPS",
       #else
-			"     EtAPAS     ",
+			" EtAPAS  ",
 			#endif
 			DECIMALES_CANAL1,
 			NULL,
@@ -544,7 +583,7 @@ const PunteroF R_NroDeProg[11]={
 const Numerico nroProg={
       NumHandlervfPrincipal,
       &ParametrosVF_Prog[R_NPRG],
-			"    SELEccionAr ProG    ",
+			" SELEccionAr ProG  ",
 			DECIMALES_CANAL1,
 			&nroProgEnAccion,
 			R_NroDeProg,
@@ -574,7 +613,7 @@ const PunteroF R_CrearProg[11]={
 const Numerico crearProgN={
       NumHandlervf,
       &ParametrosVF_Prog[R_NPC],
-			"    CrEAr ProG    ",
+			" CrEAr ProG  ",
 			DECIMALES_CANAL1,
 			&crearProg,
 			R_CrearProg,NULL
@@ -584,7 +623,7 @@ const Numerico crearProgN={
 
 const Titulo ProgramaEnAccion={ 
       TitleHandler,						                        /* funcion que procesa al box*/
-			"PULSE ;^´ PArA CrEAr   ",										//nombre display
+			" PULSE ;E? PArA CrEAr  ",										//nombre display
 			" -- ",									//nombre display
 			NULL,							//parametro que modifica.
 			(PunteroF*)&crearProgN.DirProc,NULL //Proximos estados
@@ -646,7 +685,7 @@ char repet=0;
        
     }
   #elif(defined(VF) && !defined(VF_BKR))
-    char new_text[22];
+    char new_text[18];
   
     
     if(VFmod==RMPVF || flag_tecla_up==1){
@@ -654,33 +693,22 @@ char repet=0;
        flag_tecla_up=0;
        
        new_text[0]=' '; 
-       new_text[1]=' ';
-       new_text[2]=' ';
-       new_text[3]=' ';
-       new_text[4]=' ';
-       new_text[5]='r';
-       new_text[6]='A';
-       new_text[7]='m';
-       new_text[8]='P';
-       new_text[9]='A';
+       new_text[1]='r';
+       new_text[2]='A';
+       new_text[3]='m';
+       new_text[4]='P';
+       new_text[5]='A';
        if((EtapaCorr)/10){
-          new_text[10]=(EtapaCorr)/10+'0'; 
-          new_text[11]=(EtapaCorr)%10+'0';
+          new_text[6]=(EtapaCorr)/10+'0'; 
+          new_text[7]=(EtapaCorr)%10+'0';
       } else  { 
-          new_text[10]=(EtapaCorr+'0');
-          new_text[11]=' ';   
+          new_text[6]=(EtapaCorr+'0');
+          new_text[7]=' ';   
       }
        
-       new_text[12]=' ';
-       new_text[13]=' ';
-       new_text[14]=' ';
-       new_text[15]=' ';
-       new_text[16]=' ';
-       new_text[17]=' ';
-       new_text[18]=' ';
-       new_text[19]=' ';
-       new_text[20]=' ';
-       new_text[21]='\0';
+       new_text[8]=' ';
+       new_text[9]=' ';
+       new_text[10]='\0';
        
        if(resetRamp==0){
          resetRamp=1;
@@ -694,58 +722,51 @@ char repet=0;
          minutos++;
      
        new_text[0]=' ';
-       new_text[1]=' ';
-       new_text[2]=' ';
-       new_text[3]=' ';
-       new_text[4]=' ';
-       new_text[5]='m';
-       new_text[6]='E';
-       new_text[7]='S';
-       new_text[8]='E';
-       new_text[9]='t';
-       new_text[10]='A';
+       new_text[1]='m';
+       new_text[2]='E';
+       new_text[3]='S';
+       new_text[4]='E';
+       new_text[5]='t';
+       new_text[6]='A';
        if((EtapaCorr)/10){
-          new_text[11]=(EtapaCorr)/10+'0'; 
-          new_text[12]=(EtapaCorr)%10+'0';
+          new_text[7]=(EtapaCorr)/10+'0'; 
+          new_text[8]=(EtapaCorr)%10+'0';
       } else  {  
-          new_text[11]=(EtapaCorr+'0');
+          new_text[7]=(EtapaCorr+'0');
           //new_text[7]=' '; 
       } 
-         new_text[12]=' ';
+         new_text[8]=' ';
        
        if((minutos)/100){
-          new_text[13]=(minutos)/100+'0';
-          new_text[14]=((minutos)%100)/10+'0'; 
-          new_text[15]=(minutos)%10+'0';
-          new_text[16]='m';
-          new_text[17]='i';
-          new_text[18]='n';
-          new_text[19]=' ';
-          new_text[20]=' ';
-          new_text[21]='\0';
+          new_text[9]=(minutos)/100+'0';
+          new_text[10]=((minutos)%100)/10+'0'; 
+          new_text[11]=(minutos)%10+'0';
+          new_text[12]='m';
+          new_text[13]='i';
+          new_text[14]='n';
+          new_text[15]=' ';
+          new_text[16]=' ';
+          new_text[17]='\0';
        } else if((minutos/10) && (minutos/100) != 1) {
          // new_text[9]=' ';
-          new_text[13]=(minutos)/10+'0'; 
-          new_text[14]=(minutos)%10+'0';
-          new_text[15]='m';
-          new_text[16]='i';
-          new_text[17]='n';
-          new_text[18]=' ';
-          new_text[19]=' ';
-          new_text[20]=' ';
-          new_text[21]='\0';
+          new_text[9]=(minutos)/10+'0'; 
+          new_text[10]=(minutos)%10+'0';
+          new_text[11]='m';
+          new_text[12]='i';
+          new_text[13]='n';
+          new_text[14]=' ';
+          new_text[15]=' ';
+          new_text[16]='\0';
        }else{
           //new_text[9]=' ';
           //new_text[10]=' ';  
-          new_text[13]=(minutos+'0');
-          new_text[14]='m';
-          new_text[15]='i';
-          new_text[16]='n';
-          new_text[17]=' ';
-          new_text[18]=' ';
-          new_text[19]=' ';
-          new_text[20]=' ';
-          new_text[21]='\0';
+          new_text[9]=(minutos+'0');
+          new_text[10]='m';
+          new_text[11]='i';
+          new_text[12]='n';
+          new_text[13]=' ';
+          new_text[14]=' ';
+          new_text[15]='\0';
        }
        
        
@@ -801,50 +822,49 @@ char repet=0;
          minutos++;
      
        new_text[0]=' ';
-       new_text[1]=' ';
-       new_text[2]=' ';
-       new_text[3]=' ';
-       new_text[4]=' ';
-       new_text[5]='F';
-       new_text[6]='i';
-       new_text[7]='n';
-       new_text[8]='A';
-       new_text[9]='L';
-       new_text[10]=' ';
-       new_text[11]='E';
-       new_text[12]='n';
-       new_text[13]=' ';
+       new_text[1]='F';
+       new_text[2]='i';
+       new_text[3]='n';
+       new_text[4]='A';
+       new_text[5]='L';
+       new_text[6]=' ';
+       new_text[7]='E';
+       new_text[8]='n';
+       new_text[9]=' ';
        
        if((Ti_MES-minutos+1)/100){
-          new_text[14]=(Ti_MES-minutos+1)/100+'0';
-          new_text[15]=((Ti_MES-minutos+1)%100)/10+'0'; 
-          new_text[16]=(Ti_MES-minutos+1)%10+'0';
+          new_text[10]=(Ti_MES-minutos+1)/100+'0';
+          new_text[11]=((Ti_MES-minutos+1)%100)/10+'0'; 
+          new_text[12]=(Ti_MES-minutos+1)%10+'0';
+          new_text[13]=' ';
+          new_text[14]='m';
+          new_text[15]='i';
+          new_text[16]='n';
           new_text[17]=' ';
-          new_text[18]='m';
-          new_text[19]='i';
-          new_text[20]='n';
-          new_text[21]='\0';
+          new_text[18]=' ';
+          new_text[19]='\0';
        } else if(((Ti_MES-minutos+1)/10) && ((Ti_MES-minutos+1)/100) != 1) {
          // new_text[9]=' ';
-          new_text[14]=(Ti_MES-minutos+1)/10+'0'; 
-          new_text[15]=(Ti_MES-minutos+1)%10+'0';
+          new_text[10]=(Ti_MES-minutos+1)/10+'0'; 
+          new_text[11]=(Ti_MES-minutos+1)%10+'0';
+          new_text[12]=' ';
+          new_text[13]='m';
+          new_text[14]='i';
+          new_text[15]='n';
           new_text[16]=' ';
-          new_text[17]='m';
-          new_text[18]='i';
-          new_text[19]='n';
-          new_text[20]=' ';
-          new_text[21]='\0';
+          new_text[17]=' ';
+          new_text[18]='\0';
        }else{
           //new_text[9]=' ';
           //new_text[10]=' ';  
-          new_text[14]=((Ti_MES-minutos+1)+'0');
+          new_text[10]=((Ti_MES-minutos+1)+'0');
+          new_text[11]=' ';
+          new_text[12]='m';
+          new_text[13]='i';
+          new_text[14]='n';
           new_text[15]=' ';
-          new_text[16]='m';
-          new_text[17]='i';
-          new_text[18]='n';
-          new_text[19]=' ';
-          new_text[20]=' ';
-          new_text[21]='\0';
+          new_text[16]=' ';
+          new_text[17]='\0';
        }
        
        
