@@ -35,7 +35,7 @@ const unsigned char Car_Ini[]=	{
 0x27,					// <			00100111 es el grados cent
 0x76,					// =
 0x47,					// >			01000111
-0x73,					// ?
+0x01,					// ?
 0x7B,					// @
 0x6F,					// A	ok
 0x7F,					// B

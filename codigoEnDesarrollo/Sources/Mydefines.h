@@ -3,40 +3,26 @@
 
 //#include "c-Mydefgener.h"
 
-
-//#include "c-dh101-1al-PIR.h" /* DH101 contr 1 alarma PIRANI Compilado OK*/
-
-//#include "c-dh101-1al.h" /* Compilado contr                             */
-//#include "c-dh101-2al.h" /* Compilado contr                             */
-//#include "c-dh101-3al.h" /* DH101 contr 3 alarma            Compilado OK*/
-
-//#include "c-dh101P-1al.h" /* Compilado */
-//#include "c-dh101P-2al.h" /* Compilado */
-//#include "c-dh101P-3al.h" /* DH101 progr 3 alarma           Compilado OK*/
-
-#include "c-dh101-vf-Prog.h"/*DH101 PROG VERSION VF           Compilado OK*/
-
-//#include "c-dh101-B.h" /* DH101B 2 CANALES contr            Compilado OK*/
-
-//#include "c-dh101ccal-1al.h" /* DH101 colada caliente       Compilado OK*/
-
-//#include "c-dh101-vp-1al.h" /* DH101 VALV PROP 1al Compilado */
-//#include "c-dh101P-vp-1al.h" /* DH101 PROG VALV PROP 1al    Compilado OK*/
-//#include "c-dh101P-vp-2al.h" /* Compilado */
-
-
-
 /* ************ DH 101 C PIR *************** */
 
+//#include "c-dh101-1al-PIR.h" /* Compilado */
 //#include "c-dh100-1al-PIR.h" /* Compilado */
 
 /* ************ DH 101 C *************** */
 
+//#include "c-dh101-1al.h" /* Compilado */
+//#include "c-dh101-2al.h" /* Compilado */
+//#include "c-dh101-3al.h" /* Compilado */
+
 /* ************ DH 101 P *************** */
+
+//#include "c-dh101P-1al.h" /* Compilado */
+//#include "c-dh101P-2al.h" /* Compilado */
+//#include "c-dh101P-3al.h" /* Compilado */
 
 /* ************ DH 101 B *************** */
 
-
+//#include "c-dh101-B.h" /* Compilado */
 
 /* ************ DH 100 B *************** */
 
@@ -44,6 +30,7 @@
 
 /* ************ DH 101 CCAL *************** */
 
+//#include "c-dh101ccal-1al.h" /* Compilado */
 
 /* ************ DH 100 CCAL *************** */
 
@@ -59,10 +46,12 @@
 
 /* ************ DH 101 VP *************** */
 
-
+//#include "c-dh101-vp-1al.h" /* Compilado */
 
 /* ************ DH 101P VP *************** */
 
+//#include "c-dh101P-vp-1al.h" /* Compilado */
+//#include "c-dh101P-vp-2al.h" /* Compilado */
 
 /* ************ DH 100 VP *************** */
 
@@ -71,7 +60,7 @@
 
 /* ************ CD 101 C *************** */
 
-//#include "c-cd101-1al.h" /* Compilado */
+#include "c-cd101-1al.h" /* Compilado */
 //#include "c-cd101-2al.h" /* Compilado */
 
 /* ************ CD 101 P *************** */
@@ -135,7 +124,7 @@
 
 /************DH 101 VF-PROG********************/
 
-
+//#include "c-dh101-vf-Prog.h"
 
 /***********************************************/
 

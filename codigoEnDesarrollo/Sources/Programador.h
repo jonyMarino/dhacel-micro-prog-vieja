@@ -9,7 +9,7 @@
 #define MAX_PROGRAMAS 5
 #define MAX_SEGMENTOS 24
 
-#define TAMANIO_SEGMENTO 5
+#define TAMANIO_SEGMENTO 4
 
 typedef struct{
   int tipo_segmento;
@@ -21,22 +21,27 @@ typedef struct{
   } TSegmentos;		                                    //10 bytes(debe ser par)
 
 #ifdef jony_17_08
-#define TAMANIO_GENERAL 5                             //Sin el Cant_Seg que se graba aparte
+
+#define TAMANIO_GENERAL 4 
+
 typedef struct{
-  int nada;
   byte condicion_emer;
   byte tipo_tolerancia;
   int temperatura_inicial;
-  bool tipo_temperatura_inicial;
-  bool nada2;    
-  int tolerancia;					   
-  }Tinfoprograma;                                     //10 bytes (debe ser par)
+  #ifndef _APARATO_VIEJO
+  int tipo_temperatura_inicial;  					   
+  #else
+  int nada;
+  #endif
+  int tolerancia;
+
+  }Tinfoprograma;                                     //8 bytes (debe ser par)
 #endif
   
 typedef struct{
  Tinfoprograma Gral;
  TSegmentos Segmento[MAX_SEGMENTOS];
- byte nada[6]; //debe haber por lo menos un nada declarada para que se ponga en End en el segmento 26
+ byte nada[8]; //debe haber por lo menos un nada declarada para que se ponga en End en el segmento 26
 }TProgramas;		 //sizeof(TProgramas)= 256 bytes
 
 

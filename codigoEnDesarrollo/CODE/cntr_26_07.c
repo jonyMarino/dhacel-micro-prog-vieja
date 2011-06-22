@@ -127,7 +127,7 @@ SENSOR_JA,// R_Sensor2
 0,        // R_Offset2  
 
 1000,     // R_Gan1        //18
-1000,     // R_Gan2      
+1000,     // R_Gan2  
 
 0,        // R_ACT1        //20  
 0,        // R_ACT2
@@ -226,6 +226,7 @@ NO_PROGRAMA,// R_Programa
 #ifdef RPM
 0,
 0,
+1000,
 #endif
 #ifdef VF
 0,
@@ -248,6 +249,7 @@ NO_PROGRAMA,// R_Programa
 5,                                      // R_periodoAdq 
 #endif                                  
 60,                                     // R_Topn 218
+0,                                      // R_COM
 0,                                      // R_Dbnd 219
 0,                                      // R_SetC 220
 0,                                      // R_Ver  221
@@ -666,14 +668,14 @@ ResetScroll();
   /*  Verifico Funciones de programador*/
   #ifdef programador
   if(PRom[R_Programa]!=NO_PROGRAMA){
-    if(Tecla=='s'){
+    /*if(Tecla=='s'){
         Prog_Stop();
         #ifdef jony_28_06
         set_MainText("StoP");
         #endif
-    }
+    } */
       #ifdef LLAVES_EXT_P
-      if(Tecla=='c' || !In2_GetVal()){
+      if(/*Tecla=='c' ||*/ !In2_GetVal()){
       #else
       if(Tecla=='c'){
       #endif
@@ -683,7 +685,7 @@ ResetScroll();
         #endif
     }
       #ifdef LLAVES_EXT_P
-      if(Tecla=='p' || !In1_GetVal()){
+      if(/*Tecla=='p' ||*/ !In1_GetVal()){
       #else
       if(Tecla=='p'){
       #endif
@@ -1247,7 +1249,7 @@ if (vxalar < -30000)
      setPWM_period(PWM_Anl,outa1);		
   else setPWM_period(PRom[R_Per+NCN],outa1);
  
-  }else if(VFstatus == ENDVF)  //si estoy en "end" y no es EoC desconecto la alarma
+  }else if(VFstatus == ENDVF || isFirstCalVF())  //si estoy en "end" y no es EoC desconecto la alarma
     PWM_SetRatio16(0,outa1);
   else{
    PWM_SetRatio16(duty_alar_ch[NAL],outa1);  
@@ -1668,9 +1670,13 @@ if(flagBorrado){
 	  if(Flag1 && PtrTmp!=&Principal1.DirProc && (VFstatus == ENDVF || PtrTmp!=&Principal1_VF_PROG.DirProc))		// PAsaron 10 segundos fuera de la pantalla principal y estando en FIN??
 	  {
 	   if(VFstatus != ENDVF){
+	     PasarASCII("    ",1);   //borro la pantalla una ves 
+	     ResetScroll();
 	     PtrTmp=&Principal1_VF_PROG.DirProc;											//Volver a la pantalla principal
 	     FstTime=TRUE;
 	   }else{
+	     PasarASCII("    ",1);   //borro la pantalla una ves 
+	     ResetScroll();
 	     PtrTmp=&Principal1.DirProc;											//Volver a la pantalla principal
 	     FstTime=TRUE;
 	   }

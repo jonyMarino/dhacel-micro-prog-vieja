@@ -37,14 +37,14 @@ int SegmentoMostrado[CANTIDAD_SAL_CONTROL];
 int TiempoEnMinutos[CANTIDAD_SAL_CONTROL];
 
 TSegmentos SegVal[CANTIDAD_SAL_CONTROL];					//Valores temporales para correr el segmento actual
-
+/*const TProgramas  Programa[MAX_PROGRAMAS]={
+0}; */
 const TProgramas  Programa[MAX_PROGRAMAS] @(FLASH_PROGRAMADOR_START)={		 //Programas guardados en FLASH
-0,  // nada
+
 no,  //condicion_emer
 no,  //tipo_tolerancia
 0,  //temperatura_inicial
-0,  //tipo_temperatura_inicial
-0,  // nada2
+0,  // nada
 0,  //tolerancia
 
 //Tipo    ce  tt  ºC    tempo tol
@@ -73,20 +73,18 @@ no,  //tipo_tolerancia
   End ,   0,  0,    0,    0,  0,
   End ,   0,  0,    0,    0,  0,
   End,    0,  0,    0,    0,  0,
-  0,0, //nada
-0,  // nada
+  0,0, 0,0,0,0,0,0,
 no,  //condicion_emer
 no,  //tipo_tolerancia
-10,  //temperatura_inicial
-0,  //tipo_temperatura_inicial
-0,  // nada2
+0,  //temperatura_inicial
+0,  // nada
 0,  //tolerancia
 //Tipo    ce  tt  ºC    tempo tol
   MSt ,   0,  0,    0,    1,  0,
   rMPV,   0,  0,    0,  100,  0,
   MSt,    0,  0,    0,    1,  0,
   rMPt,   0,  0,   10,    1,  0		 
-};
+};       
 
 
 ///////////////////Se fija si el Segmento es END//////////
@@ -297,9 +295,11 @@ segval=&SegVal[canal];
        case MSt:
        case rMPt: 
           if (!Segmento){
+            #ifndef _APARATO_VIEJO
             if (Programa[programa].Gral.tipo_temperatura_inicial == AMb)
               SetPointPrograma[canal]=TemperaturaAnterior[canal] = ValFinal[canal];
             else //SEt
+            #endif
               SetPointPrograma[canal]=TemperaturaAnterior[canal] = Programa[programa].Gral.temperatura_inicial;
           } 
           else 
