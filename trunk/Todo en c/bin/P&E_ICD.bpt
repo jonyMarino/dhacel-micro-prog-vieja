@@ -1,0 +1,5 @@
+savebp on
+BS &CapturadorPT2.c:CapturadorPT2_Procesar+1 P D;cdSz=6 
+BS &SensorRPM.c:SenRpm_procesar+239 P D;cdSz=437 
+BS &SensorRPM.c:SenRpm_procesar+264 P D;cdSz=437 
+BS &SensorRPM.c:SenRpm_procesar+298 P D;cdSz=437 

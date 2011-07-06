@@ -1,0 +1,1258 @@
+/** ###################################################################
+**     Filename  : _12_10.C
+**     Project   : _12_10
+**     Processor : MC9S12A256BCPV
+**     Version   : Driver 01.10
+**     Compiler  : Metrowerks HC12 C Compiler
+**     Date/Time : 13/07/2005, 16:06
+**     Abstract  :
+**         Main module. 
+**         Here is to be placed user's code.
+**     Settings  :
+**     Contents  :
+**         No public methods
+**
+**     (c) Copyright UNIS, spol. s r.o. 1997-2004
+**     UNIS, spol. s r.o.
+**     Jundrovska 33
+**     624 00 Brno
+**     Czech Republic
+**     http      : www.processorexpert.com
+**     mail      : info@processorexpert.com
+** ###################################################################*/
+/* MODULE _12_10 */
+
+#include <stdlib.h>
+/* Including used modules for compiling procedure */ 
+#include "Cpu.h"
+#include "Events.h"
+#include "Display1.h"
+#include "bits5ULN.h"
+#include "bits2ULN.h"
+#include "trx.h"
+#include "PTSL.h"
+#include "PWSN.h"
+#include "PUL.h"
+#include "WDog1.h"
+#include "AS1.h"
+#include "ADC1.h"
+#include "FLASH1.h"
+#include "PWM.h"
+#include "PWM.h"
+#include "TI1.h"
+#include "O7.h"
+#include "In1.h"
+#include "In2.h"
+#include "PWM4.h"
+#include "PWM5.h"
+#include "PWM6.h"
+#include "O2.h"
+#include "O4.h"
+#include "O6.h"
+#include "ADC.h"
+/* Include shared modules, which are used for whole project */
+#include "PE_Types.h"
+#include "PE_Error.h"
+#include "PE_Const.h"
+#include "IO_Map.h"
+
+#include "limits.h"
+
+//////////////////mis includes//////////////////////////////
+#include "Mydefines.h"
+#include "boxes.h"
+#include "Comunicacion.h"
+#include "procesamiento.h"
+#include "IFsh10.h"
+#include "Programador.h"
+#include "piddefines.h"
+#include "paramdefines.h"
+#include "Control.h"
+#include "SelfTune.h"
+#include "Sensores.h"
+#include "cnfbox.h"
+#include "teclas.h"
+#include "boxescolcal.h"
+////////////////////////////////////////////////////////////////////////////
+// VARIABLES EN FLASH	 
+////////////////////////////////////////////////////////////////////////////
+
+volatile const int PRom[PARAMETROS] @0x4000 ={
+0,           0,          0,        0,   // R_SetPoint 0
+10,         10,         10,       10,   // R_AL 4	 
+-1,         -1,         -1,       -1,   // R_ALb 8 
+-2,        -2,          0,        0,   // R_H1/R_AB1 12 
+-2,         -2,         -2,       -2,   // R_HA1/R_ABA1 16
+0,           0,          0,        0,   // R_Per 20
+SENSOR_JA,SENSOR_JA,SENSOR_JA,SENSOR_JA,// R_Sensor 24    /* direccion en Flash del TipoSensor1 
+0,          0,          0,        0,    // R_Decimales 28 /* direccion de la cantidad de decimales 
+0,          0,          0,        0,    // R_Offset  32   /* direccion en Flash del TipoSensor1 
+1000,       0,       1000,     1000, // R_Gan     36   /* direccion en Flash del TipoSensor1 
+0,          0,          0,        0,    // R_ACT 40
+0,          0,          0,        0,    // R_AGT 44
+0,          0,          0,        0,    // R_ACP 48
+0,          0,          0,        0,    // R_AGP 52
+0,          0,          0,        0,    // R_AAnlLow 56
+100,        100,        100,      100,  // R_AAnlHi 60
+0,          0,          0,        0,    // R_Lim_Inf 64 /*dir lim Inf 
+450,       450,        450,      450,  // R_Lim_Sup 68  /*dir lim sup 
+0,          0,          0,        0,    // R_None  72				
+0,          0,          0,        0,    // R_Tcontrol1  76
+0,          0,          0,        0,    // R_Reset  80
+0,          0,          0,        0,    // R_None 84
+0,          0,          0,        0,    // R_IN1 88
+0,          0,          0,        0,    // R_DR1 92
+0,          0,          0,        0,    // R_Pra 96
+0,          0,          0,        0,    // R_None 100
+0,          0,          0,        0,    // R_Pot_Inf 104  
+1000,       1000,       1000,     1000, // R_Pot_Sup 108  
+0,          0,          0,        0,    // R_Tsalcont 112 
+0,          0,          0,        0,    // R_Potman 116
+0,          0,          0,        0,    // R_Stn 120
+//#ifdef programador
+NO_PROGRAMA,NO_PROGRAMA,NO_PROGRAMA,NO_PROGRAMA,// R_Programa 124
+//#else
+//0,          0,          0,        0,    // R_Programa 124
+//#endif
+_rel,       _rel,       _rel,     _rel,    // R_T_AL 128
+0,          0,          0,        0,    // R_T_AL 132
+0,          0,          0,        0,    // R_Talar1 136
+0,          0,          0,        0,    // R_Talar1 140
+0,          0,          0,        0,    // R_Filtro1 144
+0,          0,          0,        0,    // R_None 148
+200,         														// R_Pss 152
+120,         														// R_Tss
+600,       															// R_SPlim
+800,   																	// R_SPst
+1300,                                   // R_SPsb 156    
+300,         														// R_Indf
+30,        															// R_Drdf
+200,   																	// R_Abdf
+900,         														// R_SPlimst 160
+0,          
+0,        
+0,   
+0,          0,          0,        0,    // R_None 164
+0,          0,          0,        0,    // R_None 168
+0,          0,          0,        0,    // R_None 172
+0,          0,          0,        0,    // R_None 176
+0,          0,          0,        0,    // R_None 180
+0,          0,          0,        0,    // R_None 184
+0,          0,          0,        0,    // R_None 188
+0,          0,          0,        0,    // R_None 192
+0,          0,          0,        0,    // R_None 196
+0,          0,          0,        0,    // R_None 200
+0,          0,          0,        0,    // R_None 204
+0,          0,          0,        0,    // R_None 208
+0,          0,          0,        0,    // R_None 212
+0,          0,                          // R_None 216
+
+60,                                     // R_Topn 218
+0,                                      // R_Dbnd 219
+0,                                      // R_SetC 220
+0,                                      // R_Ver  221
+1,                                      // R_Id   222 /* direccion del Id del aparato*/
+0,                                      // R_adq  223
+2006,                                   // R_Ano	224
+1,                                      // R_mes	225
+1,                                      // R_dia	226
+0,                                      // R_Hora 227
+1,                                      // R_int	228
+0,                                      // R_ATA  229
+
+};
+			
+
+////////////////////////////////////////////////////////////////////////////
+// VARIABLES GLOBALES
+////////////////////////////////////////////////////////////////////////////
+//int PRam[PARAMETROS];	          //PARAMETROS en Flash
+
+///////VAriables que se ven desde la comunicacion//////
+#pragma DATA_SEG MYDATA
+int ValFinal[4];
+int SetPoint[4];                        // Set Point en Ram que se utiliza para el control y los calculos
+int duty_cont_ch[4];
+int duty_alar_ch[4];
+word Result[4];						              //valor linealizado
+#pragma DATA_SEG DEFAULT
+////////////////////////////////////////////////////////////////////////////////
+const int div_dec[]={1,10,100,1000,10000};// divisores del decimal/////////////////////////
+
+byte  * ptr_ctes;							          // puntero a constantes en la flash
+bool Flag1;								              // contador (10 seg) de RTIs usado para la navegacion
+//U8  CtrlMode;								          // normal / manual
+PunteroF PtrTmp;			                  /* para el manipuleo */
+
+long Vx[CANTIDAD_CANALES];              //Array de los valores que salen del ADC
+int ValCont [CANTIDAD_CANALES];         //valor que controla el equipo con PID
+long int TA;		                        //Temperatura ambiente
+long buffer_deriv[CANTIDAD_CANALES];
+long buffer_fil[CANTIDAD_CANALES];
+long suminteg[CANTIDAD_CANALES];
+int deriv[CANTIDAD_CANALES];
+long auxiliar;
+long auxiliar1;
+int Dr;
+long vxalar;
+int dutytmp;
+byte flagalar[10];
+extern byte FlagCleaner;
+extern int flagsst;
+
+
+#ifdef VPROP
+int duty_vprop;
+long cnt_duty_vprop = 0;
+#endif
+
+
+//////////VARIABLES DE LOS BOXES////////////////
+#ifdef adquisidor
+int Estado_Adquisicion;
+#endif
+////////////////////////////////////////////////
+
+////////////// variables de los displays ///////////////////////////////
+byte DotNum[CANTIDAD_DISPLAYS];			    /* punto decimal a encender */
+/////////////////////////////////////////////////////////////
+
+/////////////LEDS//////////////////////
+bool led[NUM_SALIDAS];
+///////////////////////////////////
+
+///////////PWM/////////////
+word RatioStore[4];
+extern byte	KeyEdge;
+int duty;
+////////////MEMORIZACION/////////////////////////
+#ifdef adquisidor
+extern bool Date_EnUser;
+#endif
+bool Mostrar_Proc;
+
+
+////////////////////////////////////////////////
+
+/////////////////FUNCION PRINCIPAL//////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////				
+
+ 
+#define valnorm(i) ((Vx[i]+PRom[R_ACT+i])*(1000+PRom[R_AGT+i])/1000)  
+
+#pragma INLINE
+
+
+#pragma INLINE
+
+
+#ifdef jony_15_08
+void BorrarPagApagado(void){
+  (void) EraseSectorInternal(FLASH_APAGADO_START);  
+}
+#endif
+
+void main(void)
+{ 
+  byte i;
+  long ValProv,tmpint;
+  int ValLin,ValRet;
+  bool flagBorrado=FALSE;
+  extern bool AD_proc;
+  /*** Processor Expert internal initialization. DON'T REMOVE THIS CODE!!! ***/
+  PE_low_level_init();
+  /*** End of Processor Expert internal initialization.                    ***/
+
+
+  /* Write your code here */   
+  #ifdef adquisidor
+  TmDt1_Init(); 	                                              // Inicializacion Fecha y Hora 
+  #endif
+  Boxes_Init(); 
+
+#ifdef SIMCIC
+auxiliar1 = *(word*)FLASH_APAGADO_START;
+EscribirWord((word)&PRom[R_SetPoint],auxiliar1);
+#endif
+
+if( PRom[R_Stn]!=St_OFF)
+  EscribirWord((word)&PRom[R_Stn],St_OFF);			                // Siempre al empezar Stn en cero
+
+
+
+
+  #ifndef jony_05_07
+  #ifdef programador
+  Prog_Init();                          // Inicializacion del programador  
+ 	#endif
+ 	#endif
+ 	
+ 	#if defined( jony_15_08) && defined(programador)
+ 	Timer_Run(2000,&flagBorrado,UNICO_SET);
+ 	#endif
+ 	
+ 	for(i=0;i<CANTIDAD_CANALES;i++){
+ 		A_Sensor(PRom[R_Sensor+i],i);			  //Limites para el sensor y dec y el PTSL
+	//	A_Decimales(PRom[R_Decimales+i],i);
+ 	}
+
+
+#ifdef _APARATO_VIEJO
+
+PWM_SetRatio16(0,outc1);
+PWM_SetRatio16(0,outa1);
+PWM_SetRatio16(0,outa2);
+PWM_SetRatio16(0,outa3);		 
+
+setPWM_period(PWM_Anl,0);	
+setPWM_period(PWM_Anl,1);	
+setPWM_period(PWM_Anl,2);	
+setPWM_period(PWM_Anl,3);	
+
+
+#else
+    setPWM_period(PRom[R_Per],0);		    // Setear Periodo Canal1
+    setPWM_period(PRom[R_Per+1],1);	    // Setear Periodo Canal1
+  	setPWM_period(PRom[R_Pra],2);       // Setear Periodo Alarma1
+  	setPWM_period(PRom[R_Pra+1],3);     // Setear Periodo Alarma1
+#endif
+
+  	PtrTmp=&Principal1.DirProc;		      // Empezar en Principal
+
+  	
+ #ifdef adquisidor
+		Setup_index();	                    // Busca el indice para grabar parametros adquiridos
+		 	
+  	if (PRom[R_adq]==1) {		            // la adquisición quedo en si al apagarse el equipo?								  
+  	  Escribir_Powerdown();             // Header que indica que hubo un corte de Energia durante la adquisición
+  	  Estado_Adquisicion = 2;           // Cartel en HLT (hult) por corte de energia
+  	  EscribirParametro(R_adq,0);		    // Poner la adquisición en no
+    	}
+ #endif
+ 
+ #ifdef programador
+ for(i=0;i<2;i++){
+  ADC_Start(0);
+  while(!AD_proc)
+    WDog1_Clear();
+  AD_proc=FALSE;
+ }
+ for(i=0;i<CANTIDAD_CANALES;i++){       // recorrer todos los canales
+        #ifdef RUVAC
+     			Linealizar(valnorm(i),SENSOR_MV,&ValRet);
+     			if(PRom[R_Sensor+i]==SENSOR_PT)
+          
+          ValProv=ValRet;
+          
+           ValProv = ((ValProv+PRom[R_ACP+i])*(1000+PRom[R_AGP+i])/1000);  
+  				
+  				
+  				if (PRom[R_Sensor+i]<SENSOR_PT)
+              ValProv=ValProv- TA + PRom[R_ATA];   
+          #ifdef _APARATO_VIEJO
+          if ((PRom[R_Sensor+i]!=SENSOR_LIN1) &&(PRom[R_Sensor+i]!=SENSOR_LIN2) && (PRom[R_Sensor+i]!=SENSOR_LIN3) && (PRom[R_Sensor+i]!=SENSOR_LIN4))      
+          #else
+          if (PRom[R_Sensor+i]!=SENSOR_LIN)
+          #endif
+            ValProv/= div_dec[SENSOR_Decimales(PRom[R_Sensor+i])-PRom[R_Decimales+i]];  
+          if (ValProv>9999) 
+            Result[i]=ERR_OF;
+  				else if (ValProv<-1999) 
+  					Result[i]=ERR_UF;
+  				ValProv=(ValProv+PRom[R_Offset+i])*PRom[R_Gan+i]/1000;         //preciso para pasar a long
+  		//		ValProv=ValProv*PRom[R_Gan]/1000;					//no anda todo en una linea
+  			 ValRet=(int)ValProv;
+   			#endif
+   			
+        Result[i]=Linealizar(valnorm(i),(t_sensor)PRom[R_Sensor+i],&ValLin);
+        ValProv=ValLin;  
+        if(PRom[R_Sensor+i]==SENSOR_PT)
+        
+        
+        
+         ValProv = ((ValProv+PRom[R_ACP+i])*(1000+PRom[R_AGP+i])/1000);  
+				
+				
+				if (PRom[R_Sensor+i]<SENSOR_PT)
+            ValProv=ValProv- TA + PRom[R_ATA];   
+        #ifdef _APARATO_VIEJO
+        if ((PRom[R_Sensor+i]!=SENSOR_LIN1) &&(PRom[R_Sensor+i]!=SENSOR_LIN2) && (PRom[R_Sensor+i]!=SENSOR_LIN3) && (PRom[R_Sensor+i]!=SENSOR_LIN4))      
+        #else
+        if (PRom[R_Sensor+i]!=SENSOR_LIN)
+        #endif
+          ValProv/= div_dec[SENSOR_Decimales(PRom[R_Sensor+i])-PRom[R_Decimales+i]];  
+        if (ValProv>9999) 
+          Result[i]=ERR_OF;
+				else if (ValProv<-1999) 
+					Result[i]=ERR_UF;
+				ValProv=(ValProv+PRom[R_Offset+i])*PRom[R_Gan+i]/1000;         //preciso para pasar a long
+		//		ValProv=ValProv*PRom[R_Gan]/1000;					//no anda todo en una linea
+		
+				ValFinal[i]=(int) ValProv;
+   }
+ 
+//				if (PRom[R_Ver]==DIF)
+//				ValFinal[0]=ValFinal[0]-ValFinal[1];
+
+
+
+
+  #ifdef jony_05_07
+  Prog_Init();                          // Inicializacion del programador  
+  #ifdef jony_08_07
+  if(PRom[R_Programa]!=NO_PROGRAMA){
+    t_prog_state state=get_ProgState(0);  
+    
+    if(state==PROG_STOPED)
+     set_MainText("StoP");
+
+  }
+  
+  #endif
+ 	#else
+ 	for(i=0;i<CANTIDAD_SAL_CONTROL;i++)	  
+ 		 if (PRom[R_Programa+i]!=NO_PROGRAMA) 		  
+ 		  ReestablecerPrograma(i);
+ 	#endif
+ 	
+ while (save_parametros);                // Por si se cambio algun parametro en ReestablecerPrograma()		 
+ #endif 	
+
+
+ResetScroll(); 
+
+
+/////////////////// LOOP CONTINUO /////////////////////////
+  for(;;)
+  { 
+  			#ifdef _TEST1
+      Bit1_NegVal();
+
+  		#endif
+  #ifdef jony_25_06
+  Tecla=get_key();
+  #else
+  Tecla=KeyEdge;
+  KeyEdge=0;
+  #endif
+  (*PtrTmp)();                          // Funcion para el box correspondiente; llama a Num Handler, TextHandler, etc.	
+  
+  WDog1_Clear();					              // resetear Watch dog
+   
+  #ifdef jony_25_06
+  /*  Verifico Funciones de programador*/
+  #ifdef programador
+  if(PRom[R_Programa]!=NO_PROGRAMA){
+    if(Tecla=='s'){
+        Prog_Stop();
+        #ifdef jony_28_06
+        set_MainText("StoP");
+        #endif
+    }
+    if(Tecla=='c' || !In2_GetVal()){
+        Prog_Continue();
+        #ifdef jony_28_06
+        set_MainText("");
+        #endif
+    }
+    if(Tecla=='p' || !In1_GetVal()){
+        Prog_reset();
+        #ifdef jony_28_06
+        set_MainText("StoP");
+        #endif
+    }
+  
+  }
+  #endif
+  
+  if(Tecla=='k')
+    FlagCleaner=1;
+  #endif
+  
+//normalizo para entrar en la tabla de linealizacion. Ajusta cero y offset del ad
+//el ajuste de cero es absoluto y el de ganancia porcentual
+
+     
+  if (AD_proc)									        // esta el flag de procesar los resultados del AD??
+  {
+
+			#ifdef _TEST1
+      Bit2_SetVal();
+
+  		#endif
+////////////////// ELECCION DE SET POINTS ////////////////
+     for (i=0;i<CANTIDAD_SAL_CONTROL;i++){
+        if (PRom[R_Stn+i]== Stc) 
+          SetPoint[i] = PRom[R_SetPoint+i]; 
+        #ifndef programador
+        else  
+          SetPoint[i] = PRom[R_SetPoint+i];
+        #else
+		    else if(PRom[R_Programa+i]!=NO_PROGRAMA) SetPoint[i] = get_SP_Programa(i) ;
+		    else SetPoint[i] = PRom[R_SetPoint+i]; 
+        #endif
+        
+     }
+     #ifdef jony_13_07
+     #ifdef SP_EXTERNO
+     SetPoint[0]+=ValFinal[1];
+     #endif
+     #endif
+
+     #ifdef CCAL
+
+			if(flagsst == _STRT)																			// primero veo inicio y pongo sp
+        SetPoint[0] =Lim_Inf_ch[0];															// bien abajo para que no prenda nunca
+			else if(flagsst == _SST)																	// primero veo sst y pongo sp
+        SetPoint[0] = PRom[R_SPlim];
+      else if(PRom[R_Stn]==Stc)																	// segundo veo autosint
+        SetPoint[0] = (int)((long)PRom[R_SetPoint]*PRom[R_SPlimst]/1000);
+      else if(!In1_GetVal())																		// tercero veo sp externo
+        SetPoint[0] = PRom[R_SPsb]; 
+      else		  																								// y si nada, el sp normal
+				SetPoint[0] = PRom[R_SetPoint];
+
+		 #endif
+
+
+//////////////////////////////////////////////////////////
+        
+/////////////////// Calculos para los canales leidos//////////  
+
+        for(i=0;i<CANTIDAD_CANALES;i++){// recorrer todos los canales
+         #ifdef RUVAC
+     			Result[i]=Linealizar(valnorm(i),SENSOR_MV,&ValRet);
+
+          ValProv=ValRet;
+          
+  				ValProv=(ValProv+PRom[R_Offset+i])*PRom[R_Gan+i]/1000;         //preciso para pasar a long
+  		//		ValProv=ValProv*PRom[R_Gan]/1000;					//no anda todo en una linea
+  				ValRet=(int)ValProv;
+   			#endif
+
+        Result[i]=Linealizar(valnorm(i),(t_sensor)PRom[R_Sensor+i],&ValLin);
+
+//dan
+
+        ValProv=ValLin;  
+
+		    if((PRom[R_Sensor+i]==SENSOR_PT)||(PRom[R_Sensor+i]==SENSOR_PT))
+
+
+          ValProv = ((ValProv+PRom[R_ACP+i])*(1000+PRom[R_AGP+i])/1000);  
+
+
+
+
+
+
+				if (PRom[R_Sensor+i]<SENSOR_PT)
+            ValProv=ValProv- TA + PRom[R_ATA];   
+       #ifdef _APARATO_VIEJO
+        if ((PRom[R_Sensor+i]!=SENSOR_LIN1) &&(PRom[R_Sensor+i]!=SENSOR_LIN2) && (PRom[R_Sensor+i]!=SENSOR_LIN3) && (PRom[R_Sensor+i]!=SENSOR_LIN4))      
+        #else
+        if (PRom[R_Sensor+i]!=SENSOR_LIN)
+        #endif
+          ValProv/= div_dec[SENSOR_Decimales(PRom[R_Sensor+i])-PRom[R_Decimales+i]];  
+          if (ValProv>9999) 
+            Result[i]=ERR_OF;
+					else if (ValProv<-1999) 
+					  Result[i]=ERR_UF;
+				ValProv=(ValProv+PRom[R_Offset+i])*PRom[R_Gan+i]/1000;         //preciso para pasar a long
+//				ValFinal[i]=(int) ValProv;
+
+
+///¡¡¡¡
+
+
+
+ValFinal[i] =       filtro ((int)ValProv,
+                       PRom[R_Filtro1+i],
+                       DELTAT/100,
+                       200,
+                       &buffer_fil[i]
+                       );
+        }
+ 
+
+				if (PRom[R_Ver]==VER_DIF)
+				ValFinal[0]=ValFinal[0]-ValFinal[1];
+
+
+
+
+
+
+
+
+  #ifdef CCAL 
+	 monit_colcal();
+  #endif
+
+
+
+
+/* Calculo de las salidas. Una a una, sin loop*/           
+
+/**************************************************************************************************/
+//Salida de control 1        
+
+
+
+
+#undef NCN
+#undef NAL
+#define NCN 0
+#define NAL 0
+
+
+
+if (!PRom[R_Stn+NCN]== Stc){                                            //primero veo stune
+
+//calculo la integral
+
+ if (t_sp_alarma == _refr)
+      integral(abl,hisalar,spcont,spalar,kint,vxl,&suminteg[0+NCN],1);
+ else
+      integral(abl,hisalar,spcont,spalar,kint,vxl,&suminteg[0+NCN],1);
+
+//la derivada
+
+ Dr = derivada   (vxl,kdl,mdc,abl,&buffer_deriv[0+NCN],&deriv[0+NCN]);
+
+//el valor final de control. Es long
+
+ auxiliar =  cprop(abl,spcont,kint,vx,suminteg[0+NCN],Dr,res);      
+
+//ajusto al rango de long a int
+				
+ if (auxiliar > 30000)
+    valcont = 30000;
+ else if (auxiliar < -30000)
+    valcont = -30000;
+ else
+    valcont = (int)auxiliar;
+ 
+//Calculo del duty
+
+ if (abl >0 )
+
+ #ifdef CCAL
+	 if(flagsst == _SST)
+    duty_cont_ch[0+NCN] = dtprop(valcont,PRom[R_Pot_Inf+NCN],PRom[R_Pss]);
+	 else
+    duty_cont_ch[0+NCN] = dtprop(valcont,PRom[R_Pot_Inf+NCN],PRom[R_Pot_Sup+NCN]);
+ #else
+    duty_cont_ch[0+NCN] = dtprop(valcont,PRom[R_Pot_Inf+NCN],PRom[R_Pot_Sup+NCN]);
+ #endif
+
+ else 
+    duty_cont_ch[0+NCN] = dtonoff(valcont,duty_cont_ch[0+NCN]);
+ 
+//Valor de la salida
+
+ if (PRom[R_Tsalcont+NCN] == _ref)
+    dutytmp = 1000-duty_cont_ch[0+NCN];
+ else if (PRom[R_Tsalcont+NCN] == _man)
+    dutytmp = PRom[R_Potman+NCN];
+ else dutytmp = duty_cont_ch[0+NCN];
+      
+ #ifdef VPROP
+ duty_vprop = dutytmp;
+ 
+ #else
+ 
+ 
+ PWM_SetRatio16(dutytmp,outc1);
+
+  if(abl<=0 && PRom[R_Tsalcont+NCN]!=_man)
+    setPWM_period(PWM_Anl,outc1);	
+ else setPWM_period(PRom[R_Per+NCN],outc1);
+ 
+#endif 
+ 
+     }else SelfTuneControl(0+NCN,spcont);
+	
+
+/**************************************************************************************************/
+//Salida de control 2        
+
+#if CANTIDAD_CANALES == 2
+
+#undef NCN
+#undef NAL
+#define NCN 1
+#define NAL 1
+
+
+
+if (!PRom[R_Stn+NCN]== Stc){               //primero veo stune
+
+//calculo la integral
+
+ if (t_sp_alarma == _refr)
+      integral(abl,hisalar,spcont,spalar,kint,vxl,&suminteg[0+NCN],1);
+ else
+      integral(abl,hisalar,spcont,spalar,kint,vxl,&suminteg[0+NCN],1);
+
+//la derivada
+
+ Dr = derivada   (vxl,kdl,mdc,abl,&buffer_deriv[0+NCN],&deriv[0+NCN]);
+
+//el valor final de control. Es long
+
+ auxiliar =  cprop(abl,spcont,kint,vx,suminteg[0+NCN],Dr,res);      
+
+//ajusto al rango de long a int
+				
+ if (auxiliar > 30000)
+    valcont = 30000;
+ else if (auxiliar < -30000)
+    valcont = -30000;
+ else
+    valcont = (int)auxiliar;
+ 
+//Calculo del duty
+
+ if (abl >0 )
+    duty_cont_ch[0+NCN] = dtprop(valcont,PRom[R_Pot_Inf+NCN],PRom[R_Pot_Sup+NCN]);
+ else 
+    duty_cont_ch[0+NCN] = dtonoff(valcont,duty_cont_ch[0+NCN]);
+ 
+//Valor de la salida
+
+ if (PRom[R_Tsalcont+NCN] == _ref)
+    dutytmp = 1000-duty_cont_ch[0+NCN];
+ else if (PRom[R_Tsalcont+NCN] == _man)
+    dutytmp = PRom[R_Potman+NCN];
+ else dutytmp = duty_cont_ch[0+NCN];
+      
+ PWM_SetRatio16(dutytmp,outa3);
+
+  if(abl<=0 && PRom[R_Tsalcont+NCN]!=_man)
+    setPWM_period(PWM_Anl,outa3);	
+ else setPWM_period(PRom[R_Per+NCN],outa3);
+ 
+     }else SelfTuneControl(0+NCN,spcont);
+#endif
+
+/*************************************************************************************************
+CALCULO DE LAS SALIDAS DE ALARMA
+
+Para simplificar la notacion uso
+
+#define  t_sp_alarma	 PRom[R_T_AL+NAL]
+#define  t_sal_alarma  PRom[R_Talar1+NAL]
+#define  vx 					 ValFinal[0+NCN]
+#define  valcont 			 ValCont[0+NCN]
+#define  dutyold 	 		 duty_alar_ch[NAL]
+#define  spalar				 PRom[R_AL+NAL]
+#define  res 					 PRom[R_Reset+NAL]
+#define  hisalar			 PRom[R_HA1+NAL]
+#define  abalar 			 PRom[R_HA1+NAL]
+#define  dutyalar			 duty_alar_ch[NAL]
+
+#define VAL_RET   ValFinal[0+NCN]
+
+**************************************************************************************************/
+
+/*CALCULO DE LA SALIDA DE ALARMA 1*/
+
+
+#undef NCN
+#undef NAL
+#define NAL 0                                         //variables y parametros de canal1
+#define NCN 0
+    
+
+/*Este modulo calcula la señal de alarma*/
+
+switch (t_sp_alarma){				
+    case _rel:														
+		    vxalar = cprop(hisalar, spcont+spalar, 0, vx, 0, 0,res);                  //relativa, los dos sp      
+    break;
+ 
+    case _abs:														
+		    vxalar = cprop(hisalar,spalar,0,vx,0,0,res);      												//absoluta solo el sp de al
+		break;
+
+    case _refr:																																//refrig, los dos sp con In y Dr
+		    vxalar = cprop(hisalar,spcont+spalar,kint,vx,suminteg[0+NCN],(int)buffer_deriv[0+NCN],res);      
+    break;
+          
+    case _ban:														
+        if(vx > spcont)         
+            vxalar =cprop(hisalar,spcont+spalar/2,0,vx,0,0,res);									//banda, arriba como rel
+        else
+            vxalar =1000 - cprop(hisalar,spcont-spalar/2,0,vx,0,0,res);						//abajo idem pero polarid inv
+    break;
+
+#ifdef programador
+    case _seg:							                                                  //segmento							
+        if(SegmentoActual[0+NCN]+OFFSET_SEG1==spalar && PRom[R_Programa]!=NO_PROGRAMA)
+            vxalar = 30000;	                                                  //Siempre on
+        else
+            vxalar = -30000;                                                  //Siempre off
+    break;
+    
+    case _eoc:
+        if(isProgFinish(0+NCN))																								//fin de ciclo
+            vxalar = 30000;	 
+        else
+            vxalar = -30000; 
+    break;
+#endif
+
+    default:
+		    vxalar = vx-spalar;
+    break;
+    };
+
+
+/*Este modulo limita los valores a int*/
+
+if (vxalar > 30000)
+    vxalar = 30000;
+if (vxalar < -30000)
+    vxalar = -30000;
+
+
+
+/*Este modulo calcula el valor del duty*/
+
+ switch (t_sal_alarma){				
+    case _e:														
+        if (hisalar > 0)													                            //exceso, al reves que la señal de cal
+            duty_alar_ch[NAL] = dtprop   (1000 - vxalar,0,1000);
+        else 
+            duty_alar_ch[NAL] = dtonoff(1000 - vxalar,duty_alar_ch[NAL]);
+    break;    
+
+    case _d:														
+        if (hisalar > 0)																											//defecto
+            duty_alar_ch[NAL] = dtprop   (vxalar,0,1000);                                     
+        else 
+            duty_alar_ch[NAL] = dtonoff(vxalar,duty_alar_ch[NAL]);
+    break;
+
+    case _eret:																																//exc con ret
+	      if (FlagCleaner==1)																										//si fue pedido limpio flag
+	          flagalar[NAL] = 0;	 
+
+       if(flagalar[NAL]!=1)																										//si no hay flag de ret, calculo
+            duty_alar_ch[NAL] = dtonoff(1000 - vxalar,duty_alar_ch[NAL]);      
+
+       if(duty_alar_ch[NAL]==1000)																						//y si llegue a 1000, pongo flag
+		        flagalar[NAL] = 1;
+    break;
+
+    case _dret:																																//def con ret
+	      if (FlagCleaner==1)
+	          flagalar[NAL] = 0;	
+	      
+       if(flagalar[NAL]!=1)
+            duty_alar_ch[NAL] = dtonoff(vxalar,duty_alar_ch[NAL]);
+       
+       if(duty_alar_ch[NAL]==1000)
+		        flagalar[NAL] = 1;
+    break;
+
+    case _dbloq:																															//bloqueada
+            duty_alar_ch[NAL] = dtonoff(vxalar,duty_alar_ch[NAL]);						//calculo
+
+       if(duty_alar_ch[NAL]==0)
+    		    flagalar[NAL] = 1;
+       
+       if(flagalar[NAL] == 0)
+            duty_alar_ch[NAL]=0;
+    break;
+
+    case _RET:
+       #ifdef RUVAC
+            duty_alar_ch[NAL]=((long)(ValRet - PRom[R_AAnlLow+NAL]))*1000/(PRom[R_AAnlHi+NAL]-PRom[R_AAnlLow+NAL]); 
+       #else
+            duty_alar_ch[NAL]=((long)(VAL_RET - PRom[R_AAnlLow+NAL]))*1000/(PRom[R_AAnlHi+NAL]-PRom[R_AAnlLow+NAL]); 
+			 #endif
+			 if(duty_alar_ch[NAL]>1000)
+			      duty_alar_ch[NAL]=1000;
+			 else if(duty_alar_ch[NAL]<0)
+			      duty_alar_ch[NAL]=0;
+			 break;
+			 
+    default:
+			 duty_alar_ch[NAL] = 0; 
+       break; 
+ };
+
+ 
+//Calculo valor de la salida de alarma
+  PWM_SetRatio16(duty_alar_ch[NAL],outa1);  
+
+	if(PRom[R_Talar1+NAL]==_RET || hisalar<=0)
+     setPWM_period(PWM_Anl,outa1);		
+  else setPWM_period(PRom[R_Per+NCN],outa1);
+
+/**********************************************************************************************************/
+ /*CALCULO DE LA SALIDA DE ALARMA 2*/
+
+
+#undef NAL
+#undef NCN
+
+#if CANTIDAD_CANALES == 2
+    #ifdef SP_EXTERNO
+      #define NAL 1                                         //variables y parametros de canal1
+      #define NCN 0
+    #else
+      #define NAL 1                                         //variables y parametros de canal1
+      #define NCN 1
+    #endif
+#else
+#define NAL 1                              //selecciono la alarma
+#define NCN 0
+
+#endif
+
+
+/*Este modulo calcula la señal de alarma*/
+
+switch (t_sp_alarma){				
+    case _rel:														
+		    vxalar = cprop(hisalar, spcont+spalar, 0, vx, 0, 0,res);                  //relativa, los dos sp      
+    break;
+ 
+    case _abs:														
+		    vxalar = cprop(hisalar,spalar,0,vx,0,0,res);      												//absoluta solo el sp de al
+		break;
+
+    case _refr:																																//refrig, los dos sp con In y Dr
+		    vxalar = cprop(hisalar,spcont+spalar,kint,vx,suminteg[0+NCN],(int)buffer_deriv[0+NCN],res);   		
+    break;
+          
+    case _ban:														
+        if(vx > spcont)         
+            vxalar =cprop(hisalar,spcont+spalar/2,0,vx,0,0,res);									//banda, arriba como rel
+        else
+            vxalar =1000 - cprop(hisalar,spcont-spalar/2,0,vx,0,0,res);						//abajo idem pero polarid inv
+    break;
+
+#ifdef programador
+    case _seg:							                                                  //segmento							
+        if(SegmentoActual[0+NCN]+OFFSET_SEG1==spalar && PRom[R_Programa]!=NO_PROGRAMA)
+            vxalar = 30000;	                                                  //Siempre on
+        else
+            vxalar = -30000;                                                  //Siempre off
+    break;
+    
+    case _eoc:
+        if(isProgFinish(0+NCN))																								//fin de ciclo
+            vxalar = 30000;	 
+        else
+            vxalar = -30000; 
+    break;
+#endif
+
+    default:
+		    vxalar = vx-spalar;
+    break;
+    };
+
+
+/*Este modulo limita los valores a int*/
+
+if (vxalar > 30000)
+    vxalar = 30000;
+if (vxalar < -30000)
+    vxalar = -30000;
+
+
+/*Este modulo calcula el valor del duty*/
+
+ switch (t_sal_alarma){				
+    case _e:														
+        if (hisalar > 0)													                            //exceso, al reves que la señal de cal
+            duty_alar_ch[NAL] = dtprop   (1000 - vxalar,0,1000);
+        else 
+            duty_alar_ch[NAL] = dtonoff(1000 - vxalar,duty_alar_ch[NAL]);
+    break;    
+
+    case _d:														
+        if (hisalar > 0)																											//defecto
+            duty_alar_ch[NAL] = dtprop   (vxalar,0,1000);                                     
+        else 
+            duty_alar_ch[NAL] = dtonoff(vxalar,duty_alar_ch[NAL]);
+    break;
+
+    case _eret:																																//exc con ret
+	      if (FlagCleaner==1)																										//si fue pedido limpio flag
+	          flagalar[NAL] = 0;	 
+
+       if(flagalar[NAL]!=1)																										//si no hay flag de ret, calculo
+            duty_alar_ch[NAL] = dtonoff(1000 - vxalar,duty_alar_ch[NAL]);      
+
+       if(duty_alar_ch[NAL]==1000)																						//y si llegue a 1000, pongo flag
+		        flagalar[NAL] = 1;
+    break;
+
+    case _dret:																																//def con ret
+	      if (FlagCleaner==1)
+	          flagalar[NAL] = 0;	
+	      
+       if(flagalar[NAL]!=1)
+            duty_alar_ch[NAL] = dtonoff(vxalar,duty_alar_ch[NAL]);
+       
+       if(duty_alar_ch[NAL]==1000)
+		        flagalar[NAL] = 1;
+    break;
+
+    case _dbloq:																															//bloqueada
+            duty_alar_ch[NAL] = dtonoff(vxalar,duty_alar_ch[NAL]);						//calculo
+
+       if(duty_alar_ch[NAL]==0)
+    		    flagalar[NAL] = 1;
+       
+       if(flagalar[NAL] == 0)
+            duty_alar_ch[NAL]=0;
+    break;
+
+    case _RET:
+       #ifdef RUVAC
+            duty_alar_ch[NAL]=((long)(ValRet - PRom[R_AAnlLow+NAL]))*1000/(PRom[R_AAnlHi+NAL]-PRom[R_AAnlLow+NAL]); 
+       #else
+            duty_alar_ch[NAL]=((long)(VAL_RET - PRom[R_AAnlLow+NAL]))*1000/(PRom[R_AAnlHi+NAL]-PRom[R_AAnlLow+NAL]); 
+			 #endif
+			 if(duty_alar_ch[NAL]>1000)
+			      duty_alar_ch[NAL]=1000;
+			 else if(duty_alar_ch[NAL]<0)
+			      duty_alar_ch[NAL]=0;
+			 break;
+			 
+    default:
+			 duty_alar_ch[NAL] = 0; 
+       break; 
+ };
+
+ 
+//Calculo valor de la salida de alarma
+  PWM_SetRatio16(duty_alar_ch[NAL],outa2);  
+
+	if(PRom[R_Talar1+NAL]==_RET || hisalar<=0)
+     setPWM_period(PWM_Anl,outa2);		
+  else setPWM_period(PRom[R_Per+NCN],outa2);
+
+
+/*******************************************************************************************************/
+  /*CALCULO DE LA SALIDA DE ALARMA 3*/
+
+
+
+#undef NAL
+#undef NCN
+
+#if (CANTIDAD_CANALES == 1 && ALARMAS_CH1 == 3)
+#define NAL 2                                                                 //variables y parametros de canal1
+#define NCN 0
+
+
+
+//Este modulo calcula la señal de alarma
+
+switch (t_sp_alarma){				
+    case _rel:														
+		    vxalar = cprop(hisalar, spcont+spalar, 0, vx, 0, 0,res);                  //relativa, los dos sp      
+    break;
+ 
+    case _abs:														
+		    vxalar = cprop(hisalar,spalar,0,vx,0,0,res);      												//absoluta solo el sp de al
+		break;
+
+    case _refr:														
+		    vxalar = cprop(hisalar,spcont+spalar,kint,vx,suminteg[0+NCN],0,res);      		//refrig, los dos sp con In y Dr
+    break;
+          
+    case _ban:														
+        if(vx > spcont)         
+            vxalar =cprop(hisalar,spcont+spalar/2,0,vx,0,0,res);									//banda, arriba como rel
+        else
+            vxalar =1000 - cprop(hisalar,spcont-spalar/2,0,vx,0,0,res);						//abajo idem pero polarid inv
+    break;
+
+#ifdef programador
+    case _seg:							                                                  //segmento							
+        if(SegmentoActual[0+NCN]+OFFSET_SEG1==spalar && PRom[R_Programa]!=NO_PROGRAMA)
+            vxalar = 30000;	                                                  //Siempre on
+        else
+            vxalar = -30000;                                                  //Siempre off
+    break;
+    
+    case _eoc:
+        if(isProgFinish(0+NCN))																								//fin de ciclo
+            vxalar = 30000;	 
+        else
+            vxalar = -30000; 
+    break;
+#endif
+
+    default:
+		    vxalar = vx-spalar;
+    break;
+    };
+
+
+//Este modulo limita los valores a int
+
+if (vxalar > 30000)
+    vxalar = 30000;
+if (vxalar < -30000)
+    vxalar = -30000;
+
+
+//Este modulo calcula el valor del duty
+
+ switch (t_sal_alarma){				
+    case _e:														
+        if (hisalar > 0)													                            //exceso, al reves que la señal de cal
+            duty_alar_ch[NAL] = dtprop   (1000 - vxalar,0,1000);
+        else 
+            duty_alar_ch[NAL] = dtonoff(1000 - vxalar,duty_alar_ch[NAL]);
+    break;    
+
+    case _d:														
+        if (hisalar > 0)																											//defecto
+            duty_alar_ch[NAL] = dtprop   (vxalar,0,1000);                                     
+        else 
+            duty_alar_ch[NAL] = dtonoff(vxalar,duty_alar_ch[NAL]);
+    break;
+
+    case _eret:																																//exc con ret
+	      if (FlagCleaner==1)																										//si fue pedido limpio flag
+	          flagalar[NAL] = 0;	 
+
+       if(flagalar[NAL]!=1)																										//si no hay flag de ret, calculo
+            duty_alar_ch[NAL] = dtonoff(1000 - vxalar,duty_alar_ch[NAL]);      
+
+       if(duty_alar_ch[NAL]==1000)																						//y si llegue a 1000, pongo flag
+		        flagalar[NAL] = 1;
+    break;
+
+    case _dret:																																//def con ret
+	      if (FlagCleaner==1)
+	          flagalar[NAL] = 0;	
+	      
+       if(flagalar[NAL]!=1)
+            duty_alar_ch[NAL] = dtonoff(vxalar,duty_alar_ch[NAL]);
+       
+       if(duty_alar_ch[NAL]==1000)
+		        flagalar[NAL] = 1;
+    break;
+
+    case _dbloq:																															//bloqueada
+            duty_alar_ch[NAL] = dtonoff(vxalar,duty_alar_ch[NAL]);						//calculo
+
+       if(duty_alar_ch[NAL]==0)
+    		    flagalar[NAL] = 1;
+       
+       if(flagalar[NAL] == 0)
+            duty_alar_ch[NAL]=0;
+    break;
+
+    case _RET:
+       #ifdef RUVAC
+            duty_alar_ch[NAL]=((long)(ValRet - PRom[R_AAnlLow+NAL]))*1000/(PRom[R_AAnlHi+NAL]-PRom[R_AAnlLow+NAL]); 
+       #else
+            duty_alar_ch[NAL]=((long)(VAL_RET - PRom[R_AAnlLow+NAL]))*1000/(PRom[R_AAnlHi+NAL]-PRom[R_AAnlLow+NAL]); 
+			 #endif
+			 if(duty_alar_ch[NAL]>1000)
+			      duty_alar_ch[NAL]=1000;
+			 else if(duty_alar_ch[NAL]<0)
+			      duty_alar_ch[NAL]=0;
+			 break;
+			 
+    default:
+			 duty_alar_ch[NAL] = 0; 
+       break; 
+ };
+
+ 
+//Calculo valor de la salida de alarma
+        PWM_SetRatio16(duty_alar_ch[NAL],outa3);  
+
+	      if(PRom[R_Talar1+NAL]==_RET || hisalar<=0)
+          setPWM_period(PWM_Anl,outa3);		
+        else setPWM_period(PRom[R_Per+NCN],outa3);
+
+
+
+#endif
+
+  FlagCleaner = 0;              //lo limpio despues de procesar todos los flags
+
+			#ifdef _TEST1
+      Bit2_ClrVal();
+  		#endif
+  		
+  		
+      AD_proc=FALSE;			// deshabilitar proceso de resultado de AD
+      Mostrar_Proc=TRUE;  //Mostrar los valores en la pantalla principal (se procesa en Main Handler)
+  }
+
+/////////////Acciones de tiempo//////////////////
+#ifdef jony_25_06
+#ifdef programador
+if(Prog_actualizar)
+  Prog_ActualizarSetPoints();
+#if defined( jony_15_08) && defined(programador)
+if(flagBorrado){
+  flagBorrado=FALSE;
+  BorrarPagApagado();  
+  HabilitarAccionPagApagado();
+}
+#endif
+#endif
+#endif
+////////////////////////////////////////////////////////////////////////	
+
+////////////////////////Comunicacion /////////////////////
+/*    if (AS1_Tx==TRUE)						//Hay algo para enviar??
+	  AS1_TxChar();						// Enviar
+		
+    if ( AS1_RecvChar(&msn[Step])==ERR_OK)  //Recibi algo????		
+	  AS1_OnRxChar();											// Procesar
+  */
+  
+/////////////// Veo si hubo un overflow en el timer////////////////
+    #ifdef adquisidor
+    if (TFLG2_TOF==1){	 // el free counter runing dio una vuelta??
+    TFLG2_TOF=1; //clear bit  free counter runing
+      if (Date_EnUser) // se esta llevando la cuenta de la hora y el dia???
+      TmDt1_Inc();   // Llamar a la funcion de tiempo
+    }
+    #endif
+///////// veo si vuelvo a la pantalla principal/////////////
+	  if(Flag1 && PtrTmp!=&Principal1.DirProc)		// PAsaron 10 segundos fuera de la pantalla principal??
+	  { 
+	  PtrTmp=&Principal1.DirProc;											//Volver a la pantalla principal
+	  FstTime=TRUE;
+	  }
+	      	 
+  
+  }
+
+  /*** Processor Expert end of main routine. DON'T MODIFY THIS CODE!!! ***/
+  for(;;){}
+  /*** Processor Expert end of main routine. DON'T WRITE CODE BELOW!!! ***/
+}/*** End of main routine. DO NOT MODIFY THIS TEXT!!! ***/
+
+
+/* END _12_10 */
+
+/*
+** ###################################################################
+**
+**     This file was created by UNIS Processor Expert 2.95 [03.62]
+**     for the Freescale HCS12 series of microcontrollers.
+**
+** ###################################################################
+*/
+
