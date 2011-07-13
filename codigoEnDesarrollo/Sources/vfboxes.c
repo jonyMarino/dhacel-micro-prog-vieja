@@ -910,6 +910,7 @@ if((is_box_principal==1 || is_box_principal==3) && nroProgEnAccion!=0 /*&& flagC
    #endif    
 	   tecla_d=0; 
 	   EtapaCorr = 1;
+	   CantEtapas=PRomVF[nroProgEnAccion];
 	   fistTime = TRUE;
 	   flag_tecla_up=1;
 	   rampa_mestaTime=0;
@@ -939,7 +940,7 @@ if((is_box_principal==1 || is_box_principal==3) && nroProgEnAccion!=0 /*&& flagC
 #else
   if (Tecla=='d'){ 
 #endif    
-	   #if defined(VF_BKR) && !defined(VF101)
+	   #if (defined(VF_BKR) && !defined(VF101))||defined VF 
      if(flagAlarma==TRUE){ // si la alarma esta conectada y se presiona "down" se desconecta
       flagAlarma=FALSE;    // esto es asi solo en el aparato "VF_BKR"
       tecla_d=1;   

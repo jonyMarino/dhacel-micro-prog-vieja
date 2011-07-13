@@ -412,4 +412,5 @@ extern const Titulo Calibracion;
 extern const Titulo Setting;
 extern const Numerico Codigo1;
 extern const Titulo alarmas;
+extern const Titulo Sintonia;
 #endif

@@ -10,7 +10,7 @@
 
 /* ************ DH 101 C *************** */
 
-//#include "c-dh101-1al.h" /* Compilado */
+#include "c-dh101-1al.h" /* Compilado */
 //#include "c-dh101-2al.h" /* Compilado */
 //#include "c-dh101-3al.h" /* Compilado */
 
@@ -60,7 +60,7 @@
 
 /* ************ CD 101 C *************** */
 
-#include "c-cd101-1al.h" /* Compilado */
+//#include "c-cd101-1al.h" /* Compilado */
 //#include "c-cd101-2al.h" /* Compilado */
 
 /* ************ CD 101 P *************** */
