@@ -248,10 +248,7 @@ usar con cantidad de canales 2*/
 #define ERR_OF 1						 /*Error de la funcion de linealizacion*/
 #define ERR_UF 2						 /*Error de la funcion de linealizacion*/
 
-#ifdef DH102
-  #define numver "A0411 hd92c 1Al  "
-  #define tipoEquipo "  hd92  "
-#else
- #define numver "A0411 hd91c 1Al  "
- #define tipoEquipo "  hd91  "
-#endif 
+
+ #define numver "0711"
+ #define tipoEquipo "2S00"
+

@@ -4,7 +4,7 @@
 //#define EQA                     //va con sp externo            
 //#define EQA1                    //solo cambia el stune en el menu
 //#define SIMCIC
-  #define SIMCIC_1
+//  #define SIMCIC_1
 //#define GOROSITO                  // se modifica la unidad de la velocidad(a grados por hora) 
 /*el setpoint es el interno mas la entrada del segundo canal
 usar con cantidad de canales 2*/
@@ -111,6 +111,7 @@ usar con cantidad de canales 2*/
   #else
   #define F_VF 0
   #endif
+  #define DH102
 //#define MSJ_CORTO
 //#define debug
 //#define _TEST1 // test del tiempo de conversion del aparato
@@ -242,10 +243,10 @@ usar con cantidad de canales 2*/
 #define ERR_OF 1						 /*Error de la funcion de linealizacion*/
 #define ERR_UF 2						 /*Error de la funcion de linealizacion*/
 
-  #define numver "A001 dh102c 1Al    "
+  #define numver "A0711 dh102c 1Al  "
  
  #ifdef VF  
-  #define tipoEquipo "UF "
+  #define tipoEquipo "6E00"
  #else
   #define tipoEquipo "Ct"
  #endif

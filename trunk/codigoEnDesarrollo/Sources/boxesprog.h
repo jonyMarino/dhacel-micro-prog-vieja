@@ -22,6 +22,7 @@ extern const Textual Cond_Emergencia_JMP;
 extern const Textual Tipo_Tolerancia;
 extern const Numerico Tolerancia;
 extern const Textual Cond_Emergencia;
+extern const Numerico Nprograma;
 
 extern int	 programa_ingresado;
 

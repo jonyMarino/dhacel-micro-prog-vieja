@@ -99,6 +99,8 @@ void TxtHandlerAdq(void);
 
 void TxtHandlerAdqHAbilitacion(void);
 
+void NumeroDeProgramas();
+
 //void detectoVersionPote (void);
 
 //funciones de accion para el ingreso en los boxes/////////

@@ -4,7 +4,7 @@
 //#define EQA                     //va con sp externo            
 //#define EQA1                    //solo cambia el stune en el menu
 //#define SIMCIC
-// #define COFACO                   //solo las alarmas que esten en EoC funcionan  
+ //#define COFACO                   //solo las alarmas que esten en EoC funcionan  
 /*el setpoint es el interno mas la entrada del segundo canal
 usar con cantidad de canales 2*/
 
@@ -194,7 +194,7 @@ usar con cantidad de canales 2*/
 **  ALARMAS
 */
 
-#define ALARMAS_CH1 1
+#define ALARMAS_CH1 2
 #define CANTIDAD_SAL_ALARMA  3 /*Cantidad de salidas alarma */
 #define NUM_SALIDAS  CANTIDAD_SAL_CONTROL+CANTIDAD_SAL_ALARMA
 
@@ -257,5 +257,5 @@ usar con cantidad de canales 2*/
 #define ERR_OF 1						 /*Error de la funcion de linealizacion*/
 #define ERR_UF 2						 /*Error de la funcion de linealizacion*/
 
- #define numver "A0611 cd101c 1AL  "
+ #define numver "A0611 cd101c 2AL  "
  #define tipoEquipo "bkr "

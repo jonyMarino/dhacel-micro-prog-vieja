@@ -1738,14 +1738,14 @@ if (Tecla== 'k') Exit();
 void TitleProgHandler(void){
   TitleHandler();
   if (Tecla=='r'){ 
-  programa_ingresado=0;
+  //programa_ingresado=0;
   segmento_ingresado=0;
-  temperatura_f=Programa[0].Gral.temperatura_inicial;
-  condicion_emer= Programa[0].Segmento[0].condicion_emer;
-  tolerancia= Programa[0].Segmento[0].tolerancia;
-  if(Programa[0].Segmento[0].tipo_tolerancia==Lo)
+  temperatura_f=Programa[programa_ingresado].Gral.temperatura_inicial;
+  condicion_emer= Programa[programa_ingresado].Segmento[0].condicion_emer;
+  tolerancia= Programa[programa_ingresado].Segmento[0].tolerancia;
+  if(Programa[programa_ingresado].Segmento[0].tipo_tolerancia==Lo)
     tolerancia*=-1;  
-  tiempo= Programa[0].Segmento[0].tiempo;
+  tiempo= Programa[programa_ingresado].Segmento[0].tiempo;
   }  
 }									
 
@@ -1842,7 +1842,6 @@ char new_text[5];
   const TSegmentos * dir;
   byte tSegmento;			//Contiene los datos a grabar
   
-   
     if(Valor_Tmp==4 || segmento_ingresado==MAX_SEGMENTOS-1) /* si se ingresó End */
       tSegmento= End;
     else  
@@ -1868,6 +1867,11 @@ char new_text[5];
         tolerancia*=-1;
       tiempo= Programa[programa_ingresado].Segmento[segmento_ingresado].tiempo;
 
+    }
+    
+    if(programa_ingresado==MAX_PROGRAMAS-1){
+      //si ya llege a MAX_PROGRAMAS retorno  
+      programa_ingresado=0;
     }
   }
 }
@@ -1914,6 +1918,14 @@ const TSegmentos * dir;
 		tiempo= Programa[programa_ingresado].Segmento[segmento_ingresado].tiempo;
   }    
 }
+
+void NumeroDeProgramas(){
+  NumHandler();
+  
+  if(Tecla=='r')
+    programa_ingresado=Valor_Tmp-1;
+}
+
 #endif
 
 
@@ -1934,6 +1946,7 @@ extern int nroProgEnAccion;
 extern int crearProg;
 unsigned char i;
 static bool unaVez = FALSE;
+static bool unaVez2 = FALSE;
 static bool fTimer = FALSE;
 static bool resetScrollUnaVez = FALSE;
 
@@ -1951,20 +1964,41 @@ is_box_principal=1;
 /* ejecuto si es la primera vez que se llama al manejador */
   if(!unaVez){
     unaVez=TRUE;
+    
     #ifndef HD90
-    PasarASCII(tipoEquipo,1);
+      
+      PasarASCII(tipoEquipo,1);
+      PasarASCII(numver,0);
+      #ifdef programador
+	    Timer_Run(5000,&fTimer, UNICO_SET);
+	    #else
+	    Timer_Run(7000,&fTimer, UNICO_SET);
+	    #endif
+    #else
+       PasarASCII(numver,0);
+       Timer_Run(2500,&fTimer, UNICO_SET);
+       
     #endif
-    PasarASCII(numver,0);
-    #ifdef programador
-	  Timer_Run(5000,&fTimer, UNICO_SET);
-	  #else
-	  Timer_Run(7000,&fTimer, UNICO_SET);
-	  #endif
+    
   }
   
 
   if(!fTimer)    // espero que termine el cartel inicial
     return;
+  
+  #ifdef HD90
+   
+    if(!unaVez2){
+       unaVez2=TRUE;
+       fTimer = FALSE;
+       PasarASCII(tipoEquipo,0);
+       Timer_Run(2500,&fTimer, UNICO_SET);
+    } 
+   
+    if(!fTimer)    // espero que termine el cartel inicial
+        return;
+  #endif
+  
   
 #endif 
   
@@ -2244,7 +2278,7 @@ HAY QUE PONERLO EN OTRA PARTE!!!!!!!!!!!!!!!!
   #ifdef VF_PROG
   flagCartel=1;
   #else
-  flagCartel=cartelesHandler();
+  flagCartel=1;//cartelesHandler();
   #endif
   
   if(flagCartel!=0){
@@ -2388,7 +2422,7 @@ HAY QUE PONERLO EN OTRA PARTE!!!!!!!!!!!!!!!!
 
 // T0QUE MANTENIDO
  if(flagCartel!=0 || PRom[R_MVF]==_SP)
-  if (Tecla=='t')if(!save_parametros) Salir_num();else SaveNow=DSave=TRUE;
+  if (Tecla=='f')if(!save_parametros) Salir_num();else SaveNow=DSave=TRUE;
  
 #elif(defined(VF) && defined(VF101))   
   if (Tecla=='f')if(!save_parametros) Salir_num();else SaveNow=DSave=TRUE; 

@@ -460,7 +460,7 @@ const Numerico Principal1={
 };
 
 
-#elif (defined(DH102) && !defined(nico_1_10) && !defined(VF_PROG))
+#elif (defined(DH102) && !defined(nico_1_10) && !defined(VF_PROG) && !defined(VF))
   
   const Numerico Principal1={
       MainHandler,								    /* funcion que procesa al box*/
@@ -473,7 +473,7 @@ const Numerico Principal1={
   };
 
 
-#elif defined (DH102) && !defined(VF_PROG)
+#elif defined (DH102) && !defined(VF_PROG) && !defined(VF)
 //aparato que solo muestra la tira de parametros de tun, codigo y la alarma, todo con toque rapido 
 
 const Numerico Principal1={
@@ -498,7 +498,7 @@ const Numerico Principal1={
 			1,													 /* punto decimal a enc */
 			NULL,         							 //Parametro que decide el proximo estado
 			&etapas.DirProc,
-			&Codigo1.DirProc
+			&alarmas.DirProc
 			
 };
 
@@ -1003,7 +1003,7 @@ const Numerico Codigo1={
 			#ifdef _PRINTER 
 			NULL,&titImpresion.DirProc			//Proximos estados en bl1, primero toque rápido luego toque prolongado
 			#elif defined(programador)
-			NULL,&Programas.DirProc
+			NULL,&Nprograma.DirProc
 			#elif defined(ADQ)
 			NULL,&titAdq.DirProc				
 			#else
@@ -1120,7 +1120,7 @@ const Titulo Programas={
 		 #ifdef ADQ
 		 &titAdq.DirProc	
 		 #else 
-		 &Sintonia.DirProc		//Proximos estados
+		 NULL // &Sintonia.DirProc		//Proximos estados
 		 #endif
 			};
 #endif   

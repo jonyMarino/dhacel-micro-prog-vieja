@@ -112,7 +112,7 @@ usar con cantidad de canales 2*/
   #endif
   #define VF101
   #define VF_BKR
- //#define VF_BKR_C //si se define aparece la vel, temp, tiem, de lo contrario solo  temp, tiem (vel fija 100.0) 
+ #define VF_BKR_C //si se define aparece la vel, temp, tiem, de lo contrario solo  temp, tiem (vel fija 100.0) 
 //#define MSJ_CORTO
 //#define debug
 //#define _TEST1 // test del tiempo de conversion del aparato
@@ -181,7 +181,7 @@ usar con cantidad de canales 2*/
 **  ALARMAS
 */
 
-#define ALARMAS_CH1 1
+#define ALARMAS_CH1 2
 #define CANTIDAD_SAL_ALARMA  3 /*Cantidad de salidas alarma */
 #define NUM_SALIDAS  CANTIDAD_SAL_CONTROL+CANTIDAD_SAL_ALARMA
 
@@ -243,5 +243,5 @@ usar con cantidad de canales 2*/
 #define ERR_OF 1						 /*Error de la funcion de linealizacion*/
 #define ERR_UF 2						 /*Error de la funcion de linealizacion*/
 
- #define numver "A001 dh101c vF"
- #define tipoEquipo "bkr"
+ #define numver "0711"
+ #define tipoEquipo "1M00"

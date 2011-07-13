@@ -6,7 +6,7 @@
 //#ifdef programador
 
 
-#define MAX_PROGRAMAS 5
+#define MAX_PROGRAMAS 10
 #define MAX_SEGMENTOS 24
 
 #define TAMANIO_SEGMENTO 4

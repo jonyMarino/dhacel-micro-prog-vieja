@@ -243,8 +243,6 @@ const Textual C1TAL1=
 			Alarmas,
 			NULL,						                    //parametro que modifica.
 
-
-
   #if ALARMAS_CH1 > 1
   			(PunteroF*)&C1TAL2.DirProc,NULL				//Proximos estados
   #else

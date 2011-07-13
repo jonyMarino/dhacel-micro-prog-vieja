@@ -232,5 +232,5 @@ usar con cantidad de canales 2*/
 #define ERR_UF 2						 /*Error de la funcion de linealizacion*/
 
 
- #define numver "A001 dh101P 3AL   "
- #define tipoEquipo "  Ct  "
+ #define numver "0711"
+ #define tipoEquipo "1P00"

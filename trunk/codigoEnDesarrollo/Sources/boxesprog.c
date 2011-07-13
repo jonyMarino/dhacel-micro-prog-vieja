@@ -31,13 +31,14 @@ extern const Numerico Tolerancia;
 extern const Numerico Temp_f;
 extern const Numerico Temp_i;
 extern const Textual Cond_Emergencia;
+extern const Numerico Nprograma;
 #endif
 
 int	 programa_ingresado, segmento_ingresado, temperatura_inicial,  tipo_segmento, temperatura_f,
 	   tiempo, tolerancia,tolerancia_gral, condicion_emer,condicion_emer_gral,tipo_tolerancia,tipo_tolerancia_gral,tipo_temperatura_inicial;
 int next_tiempo,next_tol,next_prog;
 int Lim_Segmento1;	 /* Para el prog nuevo, pantalla de ingreso de programa*/
-			
+int nProg=1;			
 /************************************/
 /************************************/
 /* PARAMETROS de Programador (nuevo)*/
@@ -626,5 +627,25 @@ const Numerico Tolerancia =	             //nombre variable
 			NULL,					 //parametro que modifica. 
 			(PunteroF*)&Temp_f.DirProc,NULL					 //enter rap,enter mant
 			};
+
+/*Nro de programa*/
+/*****************/
+const TDato Nprog={
+  	 &nProg,		/* Direccion donde se encuentra el dato*/			 
+  	 NO_FUNCTION,					/* Funcion a llamar luego de la escritura del dato*/
+  	 &Lim_1, &Lim_10,	 /*Limites inferior y superior del dato*/
+		 0
+};
+
+
+const Numerico Nprograma =	             //nombre variable
+      {NumeroDeProgramas,						     /* funcion que procesa al box*/
+      &Nprog,									     /* direccion en la E2Prom */
+			"SELEc ProG ",							         //nombre display
+			0,									    		 //pos punto dec
+			NULL,					                      //parametro que modifica. 
+			(PunteroF*)&Programas.DirProc,&Sintonia.DirProc					 //enter rap,enter mant
+			};
+
 
 #endif
