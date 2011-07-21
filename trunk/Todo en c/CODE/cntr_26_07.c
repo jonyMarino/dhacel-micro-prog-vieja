@@ -1,3 +1,660 @@
+<<<<<<< .mine
+/** ###################################################################
+**     Filename  : _12_10.C
+**     Project   : _12_10
+**     Processor : MC9S12A256BCPV
+**     Version   : Driver 01.10
+**     Compiler  : Metrowerks HC12 C Compiler
+**     Date/Time : 13/07/2005, 16:06
+**     Abstract  :
+**         Main module. 
+**         Here is to be placed user's code.
+**     Settings  :
+**     Contents  :
+**         No public methods
+**
+**     (c) Copyright UNIS, spol. s r.o. 1997-2004
+**     UNIS, spol. s r.o.
+**     Jundrovska 33
+**     624 00 Brno
+**     Czech Republic
+**     http      : www.processorexpert.com
+**     mail      : info@processorexpert.com
+** ###################################################################*/
+/* MODULE _12_10 */
+
+#include <stdlib.h>
+#include <termio.h>
+#include "stdio.h"
+/* Including used modules for compiling procedure */ 
+#include "Cpu.h"
+#include "Events.h"
+#include "Display1.h"
+#include "bits5ULN.h"
+#include "bits2ULN.h"
+#include "trx.h"
+#include "PTSL.h"
+#include "PWSN.h"
+#include "PUL.h"
+#include "WDog1.h"
+#include "AS1.h"
+#include "ADC1.h"
+#include "FLASH1.h"
+#include "PWM.h"
+#include "PWM.h"
+#include "TI1.h"
+#include "O7.h"
+#include "In1.h"
+#include "In2.h"
+#include "PWM4.h"
+#include "PWM5.h"
+#include "PWM6.h"
+#include "O2.h"
+#include "O4.h"
+#include "O6.h"
+#include "ADC.h"
+/* Include shared modules, which are used for whole project */
+#include "PE_Types.h"
+#include "PE_Error.h"
+#include "PE_Const.h"
+#include "IO_Map.h"
+
+#include "limits.h"
+#include "TimerOld.h"
+
+//////////////////mis includes//////////////////////////////
+#include "Mydefines.h"
+#include "boxes.h"
+#include "Comunicacion.h"
+#include "procesamiento.h"
+#include "IFsh10.h"
+#include "Programador.h"
+#include "piddefines.h"
+#include "paramdefines.h"
+#include "Control.h"
+#include "SelfTune.h"
+#include "Sensores.h"
+#include "cnfbox.h"
+#include "teclas.h"
+#include "boxescolcal.h"
+
+#include "System.h"
+#include "SensorRPM.h"
+#include "CapturadorPT2.h"
+#include "RlxMTimer.h"
+#include "BaseTimers_1ms_40ms.h"
+#include "FuncionVF.h"
+#include "vfboxes.h" 
+#include "EPM203Manejador.h"
+#include "presentarValor.h"
+#include "ManejadorImpresionPersistente.h"
+#include "MethodContainer.h"
+#include "Integrador.h"
+#include "Humedad.h"
+#include "adq.h"
+
+#include "Parametros.h"
+#include "Medicion.h"
+#include "valorControl.h"
+#include "PID.h"
+#include "Alarmas.h"
+
+ #pragma CONST_SEG DEFAULT
+////////////////////////////////////////////////////////////////////////////
+// VARIABLES GLOBALES
+////////////////////////////////////////////////////////////////////////////
+///////VAriables que se ven desde la comunicacion//////
+#pragma DATA_SEG MYDATA
+
+						              
+#pragma DATA_SEG DEFAULT
+////////////////////////////////////////////////////////////////////////////////
+
+
+bool Flag1;								              // contador (10 seg) de RTIs usado para la navegacion
+
+//U8  CtrlMode;								          // normal / manual
+PunteroF PtrTmp;			                  /* para el manipuleo */
+
+
+int bufferSensor[CANTIDAD_CANALES];
+
+
+
+#if !defined (programador) || defined (ADQ)
+extern bool flag_1seg;
+extern char flagFinMeseta;
+#endif
+
+#ifdef ADQ
+int stateAdq=ERR_OK;
+#endif
+////////////// variables de los displays ///////////////////////////////
+byte DotNum[CANTIDAD_DISPLAYS];			    /* punto decimal a encender */
+/////////////////////////////////////////////////////////////
+
+/////////////LEDS//////////////////////
+bool led[NUM_SALIDAS];
+///////////////////////////////////
+
+
+////////////MEMORIZACION/////////////////////////
+
+bool Mostrar_Proc;
+
+
+////////////////////////////////////////////////
+
+/////////////////FUNCION PRINCIPAL//////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////				
+
+ 
+
+
+#ifdef jony_15_08
+void BorrarPagApagado(void){
+  (void) EraseSectorInternal(FLASH_APAGADO_START);  
+}
+#endif
+
+
+#ifdef _PRINTER
+
+ struct ArgPresentaValor val1={
+     &SetPoint[0],
+     " setpoint "
+ };
+ 
+ struct EPM203Conf _confPrint_;
+    
+ struct MIPConf mipConf;
+     
+
+#endif
+
+
+#ifdef RPM
+
+struct CapturadorPT2 * cap;
+
+struct SensorRpm sensorRPM;
+
+SensorRpmConf confRpm;
+
+#endif
+
+
+//salidas de control
+struct ArgControl control1={
+  0,0,outc1
+};
+
+//salidas de Alarma
+struct ArgAlarma Alarma1={
+  0,0,outa1
+};
+
+
+#if CANT_VALORES == 2  && CANTIDAD_CANALES == 2
+datoAdq valores[MAX_CANTIDAD_VALORES]={ 
+    {(int*)&ValoresCalculados[0],0},
+    {(int*)&ValoresCalculados[1],1},
+  };
+#elif CANT_VALORES == 2
+datoAdq valores[MAX_CANTIDAD_VALORES]={ 
+    {(int*)&ValoresCalculados[0],0},
+    {(int*)&SetPoint[0],0},
+  };
+#else
+datoAdq valores[MAX_CANTIDAD_VALORES]={ 
+    {(int*)&ValoresCalculados[0],0},
+};
+#endif  
+
+
+void main(void)
+{ 
+  
+  byte i;
+  long ValProv,tmpint;
+  int ValLin,ValRet;
+  int vCompTamb;
+  bool flagBorrado=FALSE;
+  extern bool AD_proc;
+  
+  #ifdef ADQ
+  unsigned int contPeriodoAdq=0;
+  #endif
+  
+  PE_low_level_init();
+  #ifdef _PRINTER
+  TERMIO_Init();
+  #endif 
+  #ifndef RPM
+  setReg8Bits(DDRT, 126);
+  #else
+  setReg8Bits(DDRT, 122);
+  PTSL_PutBit(0,TRUE);    //pongo en 1 la referencia del Schmit trigger
+  #endif 
+  
+  System_init();
+  
+  
+  #ifdef _PRINTER
+   
+  _confPrint_.direccion = PRom[R_PrnDireccion];
+  _confPrint_.fuente = PRom[R_PrnFuente];
+  mipConf.intervalo = PRom[R_PrnIntervalo];
+  mipConf.habilitado = PRom[R_PrnHabilitado];
+ 
+  
+  EPM203Manejador_init(&_confPrint_);
+  ManejadorImpresionPersistenteInit(&mipConf);
+  addMethodAImprimir(NULL,_Sensor); 
+  addMethodAImprimir(&val1,_Valor);
+  #else
+  
+    #ifndef RPM
+    AS1_Init();
+    #endif
+  
+  #endif
+  
+  
+  #ifdef RPM
+  
+  confRpm.iDecimales=PRom[R_Decimales];
+  confRpm.iFiltro=PRom[R_Filtro1];
+  confRpm.pulsosPorVuelta=PRom[R_Rpm];
+  confRpm.AjusteGan=PRom[R_AJU];
+  CapturadorPT2_Init();
+  cap=CapturadorPT2_getInstancia();
+  SenRpm_Init(&sensorRPM,1000,cap,&confRpm);
+  
+  #endif
+
+  Boxes_Init(); 
+
+
+  #ifdef INTEGRADOR
+  Acumulador[0] = (*(long*)FLASH_APAGADO_START);
+  #endif
+
+
+  if( PRom[R_Stn]!=St_OFF)
+    EscribirWord((word)&PRom[R_Stn],St_OFF);			                // Siempre al empezar Stn en cero
+
+
+  #ifndef jony_05_07
+  #ifdef programador
+  Prog_Init();                          // Inicializacion del programador  
+ 	#endif
+ 	#endif
+ 	
+ 	#if defined( jony_15_08) && defined(programador)
+ 	Timer_Run(2000,&flagBorrado,UNICO_SET);
+ 	#endif
+   
+ #ifndef RPM   
+ 	for(i=0;i<CANTIDAD_CANALES;i++){
+ 		A_Sensor(PRom[R_Sensor+i],i);			  //Limites para el sensor y dec y el PTSL
+	  bufferSensor[i]=PRom[R_Sensor+i];
+ 	}
+ #else	
+ 	setLimitesRPM ();
+ #endif
+ 
+
+  PWM_SetRatio16(0,outc1);
+  PWM_SetRatio16(0,outa1);
+  PWM_SetRatio16(0,outa2);
+  PWM_SetRatio16(0,outa3);		 
+
+  setPWM_period(PWM_Anl,0);	
+  setPWM_period(PWM_Anl,1);	
+  setPWM_period(PWM_Anl,2);	
+  setPWM_period(PWM_Anl,3);	
+
+
+
+  PtrTmp=&Principal1.DirProc;		      // Empezar en Principal
+
+ 
+ #ifdef programador
+ 
+ for(i=0;i<2;i++){
+  ADC_Start(0);
+  
+  while(!AD_proc)
+    WDog1_Clear();
+  
+  AD_proc=FALSE;
+ }
+ 
+ 
+
+    #ifdef jony_05_07
+       Prog_Init();                          // Inicializacion del programador  
+      #ifdef jony_08_07
+      if(PRom[R_Programa]!=NO_PROGRAMA){
+        t_prog_state state=get_ProgState(0);  
+    
+      if(state==PROG_STOPED)
+        set_MainText("StoP");
+
+      }
+  
+      #endif
+ 	
+ 	  #else
+ 	
+ 	  for(i=0;i<CANTIDAD_SAL_CONTROL;i++)	  
+ 		 if (PRom[R_Programa+i]!=NO_PROGRAMA) 		  
+ 		  ReestablecerPrograma(i);
+ 	
+ 	  #endif
+ 	
+ while (save_parametros);                // Por si se cambio algun parametro en ReestablecerPrograma()		 
+ 
+ #endif 	
+
+
+ResetScroll(); 
+
+
+/////////////////// LOOP CONTINUO /////////////////////////
+  for(;;)
+  {    
+  
+  executeMethods(ListaPrincipal);
+  
+ 
+  #ifdef jony_25_06
+  Tecla=get_key();
+  #else
+  Tecla=KeyEdge;
+  KeyEdge=0;
+  #endif
+  
+  (*PtrTmp)();                          // Funcion para el box correspondiente; llama a Num Handler, TextHandler, etc.	
+  
+ 
+  #ifdef jony_25_06
+  /*  Verifico Funciones de programador*/
+  #ifdef programador
+  
+  if(PRom[R_Programa]!=NO_PROGRAMA){
+    /*if(Tecla=='s'){
+        Prog_Stop();
+        #ifdef jony_28_06
+        set_MainText("StoP");
+        #endif
+    } */
+      #ifdef LLAVES_EXT_P
+      if(/*Tecla=='c' ||*/ !In2_GetVal()){
+      #else
+      if(Tecla=='c'){
+      #endif
+        Prog_Continue();
+        #ifdef jony_28_06
+        set_MainText("");
+        #endif
+    }
+      #ifdef LLAVES_EXT_P
+      if(/*Tecla=='p' ||*/ !In1_GetVal()){
+      #else
+      if(Tecla=='p'){
+      #endif
+        Prog_reset();
+        #ifdef jony_28_06
+        set_MainText("StoP");
+        #endif
+    }
+  
+  }
+  #endif
+  
+  if(Tecla=='k')
+    FlagCleaner=1;
+  #endif
+  
+//normalizo para entrar en la tabla de linealizacion. Ajusta cero y offset del ad
+//el ajuste de cero es absoluto y el de ganancia porcentual
+  
+  
+//Nicolas 
+/****************************************/
+#ifdef ADQ
+
+if(flag_1seg == TRUE && PRom[R_AdqHabilitado] && stateAdq!=ADQ_FULL){
+   flag_1seg=FALSE;
+   
+     if(contPeriodoAdq>=(PRom[R_AdqPeriodo]-1) && PRom[R_AdqHabilitado]==ADQ_SI){
+      contPeriodoAdq=0;
+      stateAdq=adquirirValorAut(valores,CANT_VALORES);
+     }else contPeriodoAdq++;
+}
+
+if(datoSerie == 't' || PRom[R_AdqTranfer]==1){
+  if(PRom[R_AdqTranfer]==1)
+    EscribirWord((word)&PRom[R_AdqTranfer],0);  //pongo en no
+  datoSerie=0;
+  bajarTodosDatosAdq(valores,CANT_VALORES);
+}
+
+#endif
+#ifdef VF
+
+
+ProcesoTeclasVF();
+
+
+if( F_VF )
+  if(flag_1seg == TRUE){
+   flag_1seg=FALSE;
+   calculoTempInstYtiempoMesetaVF(); 
+  }
+
+#endif
+
+#ifdef INTEGRADOR
+  if(flag_1seg == TRUE){
+   flag_1seg=FALSE;
+   _sumador();
+  }
+ #endif
+
+/*****************************************/
+#ifndef RPM
+
+if(bufferSensor[0]!=PRom[R_Sensor]
+  #if CANTIDAD_CANALES>1 
+   || bufferSensor[1]!=PRom[R_Sensor+1]
+  #endif
+){
+	for(i=0;i<CANTIDAD_CANALES;i++){
+ 		A_Sensor(PRom[R_Sensor+i],i);	
+ 	  bufferSensor[i]=PRom[R_Sensor+i];
+	}
+}
+ #endif
+ 
+ #ifndef RPM     
+  if (AD_proc)									        // esta el flag de procesar los resultados del AD??
+  {
+ #endif
+ 
+		
+////////////////// ELECCION DE SET POINTS ////////////////
+
+ setSetPoint();    
+
+//////////////////////////////////////////////////////////
+        
+/////////////////// Calculos para los canales leidos////////// 
+
+#ifdef RPM 
+  setValCalculado(0,SenRpm_getValue(&sensorRPM)); 
+#else
+  calculaValorFinal();
+
+#endif
+
+
+
+/* Calculo de las salidas. Una a una, sin loop*/           
+
+/**************************************************************************************************/
+//Salida de control 1        
+
+calculosDeControl(&control1);
+
+/*************************************************************************************************
+CALCULO DE LAS SALIDAS DE ALARMA
+
+Para simplificar la notacion uso
+
+#define  t_sp_alarma	 PRom[R_T_AL+NAL]
+#define  t_sal_alarma  PRom[R_Talar1+NAL]
+#define  vx 					 ValFinal[0+NCN]
+#define  valcont 			 ValCont[0+NCN]
+#define  dutyold 	 		 duty_alar_ch[NAL]
+#define  spalar				 PRom[R_AL+NAL]
+#define  res 					 PRom[R_Reset+NAL]
+#define  hisalar			 PRom[R_HA1+NAL]
+#define  abalar 			 PRom[R_HA1+NAL]
+#define  dutyalar			 duty_alar_ch[NAL]
+
+#define VAL_RET   ValFinal[0+NCN]
+
+**************************************************************************************************/
+
+/*CALCULO DE LA SALIDA DE ALARMA 1*/
+
+calculosDeAlarma(&Alarma1);
+
+
+/**********************************************************************************************************/
+ /*CALCULO DE LA SALIDA DE ALARMA 2*/
+
+#if ((ALARMAS_CH1 >= 2) || (ALARMAS_CH1 ==1 && CANTIDAD_CANALES == 2)) && !defined (RPM)
+
+#undef NAL
+#undef NCN
+
+#if CANTIDAD_CANALES == 2
+    #ifdef SP_EXTERNO
+      #define NAL 1                                         //variables y parametros de canal1
+      #define NCN 0
+    #else
+      #define NAL 1                                         //variables y parametros de canal1
+      #define NCN 1
+    #endif
+#else
+#define NAL 1                              //selecciono la alarma
+#define NCN 0
+
+#endif
+#endif
+/*******************************************************************************************************/
+  /*CALCULO DE LA SALIDA DE ALARMA 3*/
+
+
+
+#undef NAL
+#undef NCN
+
+#if (CANTIDAD_CANALES == 1 && ALARMAS_CH1 == 3)
+#define NAL 2                                                                 //variables y parametros de canal1
+#define NCN 0
+
+#elif((defined (VPROP) && defined (DOS_ALARMAS) )) 
+  #define NAL 1                                                                 //variables y parametros de canal1
+  #define NCN 0
+#endif
+
+#ifdef NAL && NCN
+
+#endif
+
+  FlagCleaner = 0;              //lo limpio despues de procesar todos los flags
+
+  AD_proc=FALSE;			// deshabilitar proceso de resultado de AD
+  Mostrar_Proc=TRUE;  //Mostrar los valores en la pantalla principal (se procesa en Main Handler)
+
+#ifndef RPM 
+  }
+#endif
+/////////////Acciones de tiempo//////////////////
+#ifdef jony_25_06
+#ifdef programador
+if(Prog_actualizar)
+  Prog_ActualizarSetPoints();
+#if defined( jony_15_08) && defined(programador)
+if(flagBorrado){
+  flagBorrado=FALSE;
+  BorrarPagApagado();  
+  HabilitarAccionPagApagado();
+}
+#endif
+#endif
+#endif
+////////////////////////////////////////////////////////////////////////	
+
+////////////////////////Comunicacion /////////////////////
+/*    if (AS1_Tx==TRUE)						//Hay algo para enviar??
+	  AS1_TxChar();						// Enviar
+		
+    if ( AS1_RecvChar(&msn[Step])==ERR_OK)  //Recibi algo????		
+	  AS1_OnRxChar();											// Procesar
+  */
+  
+///////// veo si vuelvo a la pantalla principal/////////////
+	  
+	  #ifdef VF_PROG    
+	  if(Flag1 && PtrTmp!=&Principal1.DirProc && (VFstatus == ENDVF || PtrTmp!=&Principal1_VF_PROG.DirProc))		// PAsaron 10 segundos fuera de la pantalla principal y estando en FIN??
+	  {
+	   if(VFstatus != ENDVF){
+	     PasarASCII("    ",1);   //borro la pantalla una ves 
+	     ResetScroll();
+	     PtrTmp=&Principal1_VF_PROG.DirProc;											//Volver a la pantalla principal
+	     FstTime=TRUE;
+	   }else{
+	     PasarASCII("    ",1);   //borro la pantalla una ves 
+	     ResetScroll();
+	     PtrTmp=&Principal1.DirProc;											//Volver a la pantalla principal
+	     FstTime=TRUE;
+	   }
+	  }
+	  #else
+	  if(Flag1 && PtrTmp!=&Principal1.DirProc)		// PAsaron 10 segundos fuera de la pantalla principal??
+	  { 
+	    PtrTmp=&Principal1.DirProc;											//Volver a la pantalla principal
+	    FstTime=TRUE;
+	  }
+	  #endif     	 
+  
+  }
+
+  /*** Processor Expert end of main routine. DON'T MODIFY THIS CODE!!! ***/
+  for(;;){}
+  /*** Processor Expert end of main routine. DON'T WRITE CODE BELOW!!! ***/
+}/*** End of main routine. DO NOT MODIFY THIS TEXT!!! ***/
+
+
+/* END _12_10 */
+
+/*
+** ###################################################################
+**
+**     This file was created by UNIS Processor Expert 2.95 [03.62]
+**     for the Freescale HCS12 series of microcontrollers.
+**
+** ###################################################################
+*/
+
+=======
 /** ###################################################################
 **     Filename  : _12_10.C
 **     Project   : _12_10
@@ -1751,3 +2408,4 @@ if(flagBorrado){
 ** ###################################################################
 */
 
+>>>>>>> .r7
