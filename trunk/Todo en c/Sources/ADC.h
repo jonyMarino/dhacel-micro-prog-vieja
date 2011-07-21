@@ -141,6 +141,8 @@ experimentalmente.
 ** ===================================================================
 */
 
+extern bool ADfinish;
+
 #pragma CODE_SEG __NEAR_SEG NON_BANKED     
 __interrupt void ADC_Interrupt(void);
 #pragma CODE_SEG ADC_CODE                     
@@ -155,6 +157,8 @@ long int getTempAmbiente();
 long int getValADC(unsigned char nroCanal);
 
 bool isADCready();
+
+void setFlagADCready(bool val);
 
 
 #pragma CODE_SEG DEFAULT                                   

@@ -30,9 +30,9 @@
 #include "ADC.h"
 #include "Programador.h"
 #include "Comunicacion.h"
+#include "display.h"
 
 AS1_TComData datoSerie;
-extern bool led[];
 
 /*
 ** ===================================================================

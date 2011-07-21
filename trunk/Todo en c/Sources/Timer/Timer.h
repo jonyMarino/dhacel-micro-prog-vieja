@@ -21,7 +21,8 @@ typedef enum {
 
 struct Timer{
   void (*onTime)(void*); 
-  void * Obj;
+  void * Obj;  
+  argIncs argTimer;
   ulong next_cuenta;
   ulong tiempo;
   uchar of;
@@ -29,21 +30,23 @@ struct Timer{
   
 };
 
-void Timer_Init(void* timer,unsigned int NroList,unsigned char NroTime);
+struct Timer* crearTimer();
 
-void Timer_Delete(struct Timer* t,unsigned int NroList);
+struct Method* Timer_Init(struct Timer* t,unsigned int NroList,unsigned char NroTime);
+
+void Timer_Delete(struct Method* t,unsigned int NroList);
 
 void setBaseTimer();
 
 void TimerComp(void* timer,unsigned char NroTime);
 
-uchar Timer_isfinish(struct Timer* t,unsigned int NroList);
+uchar Timer_isfinish(struct Method* mt,unsigned int NroList);
 
-ulong Timer_getCuenta(struct Timer* t,unsigned int NroList,unsigned char NroTime);
+ulong Timer_getCuenta(struct Method* mt, struct Timer* t,unsigned int NroList,unsigned char NroTime);
 
-void Timer_Restart(struct Timer* t,unsigned int NroList,unsigned char NroTime);
+void Timer_Restart(struct Method* mt,struct Timer* t,unsigned int NroList,unsigned char NroTime);
 
-void Timer_setTime(struct Timer* t,unsigned int NroList,unsigned char NroTime,ulong _tiempo);
+void Timer_setTime(struct Method* mt,struct Timer* t,unsigned int NroList,unsigned char NroTime,ulong _tiempo);
 
 ulong Timer_getTime(struct Timer* t);
 

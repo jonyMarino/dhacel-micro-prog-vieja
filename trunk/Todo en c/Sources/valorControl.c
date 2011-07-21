@@ -4,24 +4,26 @@
 #include "cnfbox.h"
 #include "In1.h"
 #include "FuncionVF.h" 
+#include "Programador.h"
 
 int SetPoint[CANTIDAD_SAL_CONTROL];                        // Set Point en Ram que se utiliza para el control y los calculos
 
 
 
-void setSetPoint(){
-   byte i;
+void setSetPoint(byte NroChanel){
    
-  for (i=0;i<CANTIDAD_SAL_CONTROL;i++){
+   
+ 
        #ifdef programador
-         if(getValParametro(R_Programa+i)!=NO_PROGRAMA) 
-            SetPoint[i] = get_SP_Programa(i);
-         else SetPoint[i] = getValParametro(R_SetPoint+i); 
+         if(getValParametro(R_Programa+NroChanel)!=NO_PROGRAMA) 
+            SetPoint[NroChanel] = get_SP_Programa(NroChanel);
+         else 
+            SetPoint[NroChanel] = getValParametro(R_SetPoint+NroChanel); 
        #else
-         SetPoint[i] = getValParametro(R_SetPoint+i);
+         SetPoint[NroChanel] = getValParametro(R_SetPoint+NroChanel);
        #endif
        
-     }
+    
      
      
      #ifdef jony_13_07
@@ -30,11 +32,6 @@ void setSetPoint(){
      #endif
      #endif
 
-     #ifndef SP_EXTERNO
-		 #ifndef programador
-		   SetPoint[0] = getValParametro(R_SetPoint+0);  
-		 #endif
-		 #endif
      
      #ifdef CCAL
 

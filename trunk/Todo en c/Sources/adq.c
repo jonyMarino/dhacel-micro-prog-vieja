@@ -7,6 +7,9 @@
 #include "Sensores.h"
 #include "adq.h"
 #include "Parametros.h"
+#include "RlxMTimer.h"
+#include "Method.h"
+#include "MethodContainer.h"
 
 #ifdef ADQ
 
@@ -18,9 +21,11 @@
 #define ESTADO_SI       1
 
 
-extern int stateAdq;
+int stateAdq=ERR_OK;
 char flagFechaHora=ESTADO_SI;
 long indexGlobal;
+struct RlxMTimer * _Rlxtimer;
+struct Method* _Method;
 
 /*Esta funcion permite un valor y elejir la posicion-
  actualmente no se utiliza
@@ -75,6 +80,35 @@ long indexGlobal;
   return error;
 }    */
 
+
+void intAdqFlash(){
+  
+  _Rlxtimer=RlxMTimer_Init(PRom[R_AdqPeriodo],ADDAdqFlash,NULL);
+  _Method=initMethod(TranferToPC,NULL);
+  MethodContainer_add(_Method,ListaPrincipal);
+
+}
+
+
+void ADDAdqFlash(){
+  if(PRom[R_AdqHabilitado] && stateAdq!=ADQ_FULL)     
+    stateAdq=adquirirValorAut(valores,CANT_VALORES);
+       
+}
+
+void TranferToPC(){
+  if(datoSerie == 't' || PRom[R_AdqTranfer]==1){
+    if(PRom[R_AdqTranfer]==1)
+      EscribirWord((word)&PRom[R_AdqTranfer],0);  //pongo en no
+    datoSerie=0;
+    bajarTodosDatosAdq(valores,CANT_VALORES);
+  }
+}
+
+
+void SetTimeAdq(unsigned int time){
+  RlxTimer_setTime(_Rlxtimer, time);
+}
 
 int guardarFechaYhora(){
   

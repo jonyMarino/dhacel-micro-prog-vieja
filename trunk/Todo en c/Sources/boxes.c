@@ -41,10 +41,13 @@
 #include "Parametros.h"
 #include "Medicion.h"
 #include "valorControl.h"
+#include "TimeOut.h"
+#include "StaticTimer.h"
 
 /////////////LEDS//////////////////////
 extern bool Date_EnUser;
 ///////////////////////////////////
+bool Mostrar_Proc;
 
 #ifdef ADQ
 extern int stateAdq;
@@ -64,11 +67,11 @@ static const char OF[]="OPEn";
 
 static char main_text[MAX_MAIN_TEXT]="St  ";
 
-bool flagpote=0;
-
 static bool show_main_text;	                                    // Se pone en uno al poner texto en maintext
-																																// hay que ponerlo en cero a mano
-static char prueba[20]="MEnSAJE PruEbA    ";
+
+bool flagpote=0;																																// hay que ponerlo en cero a mano
+
+word screen_cont;
 
 extern volatile const struct BTFPConf bTConf;
 extern struct BTFechaPersistente baseTiempo;
@@ -89,10 +92,10 @@ extern PunteroF PtrTmp;
 
 extern byte b,d;
 extern unsigned int cont;
-extern bool ADfinish;
-extern int bufferSensor[CANTIDAD_CANALES];
+extern bool ADfinish; 
+int bufferSensor[CANTIDAD_CANALES];
 byte Tecla;
-extern bool Flag1;
+
 extern dword St_Counter[CANTIDAD_SAL_CONTROL+CANTIDAD_SAL_ALARMA];
 extern byte St_Step[CANTIDAD_SAL_CONTROL+CANTIDAD_SAL_ALARMA];
 extern int duty_cont_ch[4];
@@ -120,25 +123,21 @@ TPtrBox PtrBox; //puntero a los tipos de boxes manipulados
 bool save_parametros=FALSE;	/* Ordena salvar el valor en la ram para copy a eeprom cuando set*/
 bool save;
 bool FstTime;	/* set cuando se ejecuto al menos una vez el procesador */
+PunteroF PtrTmp;			                  /* para el manipuleo */
+bool flagTimeReturn;
+
 #ifdef programador
 static enum {NOPROGRAMA,PROGRAMA}BoxAnterior; // Para saber desde donde se entro al BOx de Segmento
 #endif
 
 /* Drivers para simular el hardware */
 /************************************/
-extern byte DotNum[CANTIDAD_DISPLAYS];			/* punto decimal a encender */
-
 
 //////////////Funciones internas//////////////////////
 void Exit(void);					 // Salir a pantalla principal
 void Salir_num(void);	 // Salir por toque rapido o sostenido en pantalla numérica
 
 
-/*void detectoVersionPote (void){
-  version = 1;        // bandera para detectar el paso por el box de version
-  void TxtHandler(void);
-}
-*/
 byte Escribir(TDato * sDato,int valor){
   byte err;
   
@@ -179,9 +178,30 @@ byte Escribir(TDato * sDato,int valor){
 };
 
 /*************Inicializacion para empezar a usar los Boxes*********/ 
+
 void Boxes_Init(void){
   FstTime=TRUE;
+  PtrTmp=&Principal1.DirProc;		      // Empezar en Principal
+  flagTimeReturn=FALSE;
+  Timer_Run(TRETURN,&flagTimeReturn, UNICO_SET); 
 }
+
+/**/
+void executeBoxes(){
+  (*PtrTmp)();                          // Funcion para el box correspondiente; llama a Num Handler, TextHandler, etc.	
+}
+
+
+/**/
+void setBufferSensor(){
+  byte i;
+  
+  for(i=0;i<CANTIDAD_CANALES;i++){
+ 		A_Sensor(PRom[R_Sensor+i],i);			  //Limites para el sensor y dec y el PTSL
+	  bufferSensor[i]=PRom[R_Sensor+i];
+ 	}
+}
+
 
 /* Procesadores de los boxes */
 /*****************************/
@@ -998,9 +1018,6 @@ if (Tecla=='f'){
 /*******************************************************************************/
 
 void NumHandlervfPrincipal(void){
-    extern int crearProg;
-    extern char CantEtapas;
-    extern int nroProgEnAccion;
     
     is_box_principal=1;
 // Primer Ingreso	
@@ -1088,7 +1105,6 @@ if (Tecla=='f'){
 void NumHandlervfInicial(void){
     
     
-    extern bool DSave;
     static bool unaVez = FALSE;
     static bool fTimer = FALSE;
     
@@ -1101,9 +1117,7 @@ void NumHandlervfInicial(void){
     PasarASCII(tipoEquipo,1);
     #endif
     PasarASCII(numver,0);
-    
-	  Timer_Run(7000,&fTimer, UNICO_SET);
-	  
+    InitTimeOut(7000,&fTimer,ONETIME);
   }
   
   if(!fTimer)    // espero que termine el cartel inicial
@@ -1486,42 +1500,7 @@ void TipoSegHandler(void){
   }
 }
 #endif
-/* Procesador de los boxes numéricos con refresco de pantalla*/
-/*************************************************************/ 
-void Num_realtime_Handler(void){
-static bool refresh;
-// Primer Ingreso
-	 is_box_principal=2;
-	if (FstTime){				// es la primera vez que ingresa??	
-		  FstTime=FALSE;  // sacar primera vez
-			PtrBox.NumRO=(NumericoRO*)PtrTmp;	 // Poner el puntero PtrBox.Num con el valor del Box actual
 
-		if ((PtrBox.NumRO->Dot)>=DECIMALES_CANAL1) // El punto decimal depende del Sensor??
-      DotNum[0]=(byte)PRom[R_Decimales+PtrBox.Num->Dot-DECIMALES_CANAL1];
-			else											 // sino
-			DotNum[0]=PtrBox.NumRO->Dot; // Cargar PD que indica el Box		
-// mando mensajes
-		  PasarASCII(PtrBox.NumRO->TxtDpy,1);     //Mostrar DisplayInf
-			refresh=TRUE;
-	}
-	if(refresh){
-	 refresh=FALSE;
-	 Timer_Run(REFESH_NUMBER,&refresh,UNICO_SET);
-	 Pasar_Numero(*(PtrBox.NumRO->Dato),0,DotNum[0]);
-	}
-/////////////////////// T0QUE RÁPIDO //////////////////////////
-
-	if (Tecla=='r')  Salir_num();		// funcion de salida
-			
-		
-/////////////////////// TOQUE MANTENIDO ////////////////////////
-
-if (Tecla=='f')	Salir_num();	 // funcion de salida
-
-/////////////////////// EXIT //////////////////////////
-
-	if (Tecla== 'k') Exit();	 // Boton de Exit
-}
 
 /* Procesador del  ingreso de fechas    */
 /****************************************/
@@ -1974,16 +1953,6 @@ const TSegmentos * dir;
 /***************************************/
 void MainHandler(void){
 
-
-extern word screen_cont;
-
-extern bool DSave;
-
-extern bool Mostrar_Proc;
-
-extern bool estado_dobleSp;
-extern int nroProgEnAccion;
-extern int crearProg;
 unsigned char i;
 static bool unaVez = FALSE;
 static bool fTimer = FALSE;
@@ -1995,9 +1964,6 @@ is_box_principal=3;
 is_box_principal=1;	
 #endif
 
-#if  CANTIDAD_CANALES == 2
-//unsigned char i;
-#endif
 
 #ifndef VF_PROG
 /* ejecuto si es la primera vez que se llama al manejador */
@@ -2008,9 +1974,9 @@ is_box_principal=1;
     #endif
     PasarASCII(numver,0);
     #ifdef programador
-	  Timer_Run(5000,&fTimer, UNICO_SET);
+	  InitTimeOut(5000,&fTimer,ONETIME);
 	  #else
-	  Timer_Run(7000,&fTimer, UNICO_SET);
+	  InitTimeOut(7000,&fTimer,ONETIME);
 	  #endif
   }
   
@@ -2107,13 +2073,14 @@ is_box_principal=1;
 		    
 		    if (Valor_Tmp+sumador<(*PtrBox.Num->sDato->Sup)) Valor_Tmp+=sumador; // El Buffer es menor que el LimiteSup?? Si-> Incrementar Buffer
 				else Valor_Tmp=(*PtrBox.Num->sDato->Sup);						 // No-> Poner Buffer en maximo valor
-	    };
+	    }
 	    /* proceso Tecla down */
 	    if (Tecla=='d'){		  					      // Fue presionada una Tecla Down???
 			
 				if (Valor_Tmp-sumador>(*PtrBox.Num->sDato->Inf)) Valor_Tmp-=sumador;		// El Buffer es mayor que el LimiteInf?? Si-> Decrementar Buffer
 				else  Valor_Tmp=(*PtrBox.Num->sDato->Inf);	// No-> Poner Buffer en el minimo valor			
-		  };
+		  }
+			
 			if(PRom[R_Sensor]==SENSOR_PIR)
         Pasar_Numero_Expo(Valor_Tmp,1,DotNum[0]);
       else
@@ -2124,7 +2091,7 @@ is_box_principal=1;
 
 
 	  DSave=FALSE;
-	  Timer_Run(4000,&DSave,UNICO_SET);							// Grabar parametros con delay
+	  Timer_Run(4000,&DSave,UNICO_SET);
 	  
 	  Escribir(PtrBox.Num->sDato,Valor_Tmp);
 	  bufferNro= Valor_Tmp;
@@ -2486,7 +2453,7 @@ byte i;																							// y levanto flag para avisar que hay texto
 void Exit(void){	// Funcion Boton de Exit 
 		ResetScroll();
 	//	Tecla=' ';
-		Flag1=TRUE;
+		flagTimeReturn=TRUE;
 }
 
 void Salir_num(void){		// Funcion de Salida por toque mantenido o rapido
@@ -2657,3 +2624,32 @@ byte A_Selftun(int valor, byte salida){
   return ERR_OK;		 
 };
 
+
+
+void isTimeReturnPrincipal(){
+  ///////// veo si vuelvo a la pantalla principal/////////////
+	  
+	  #ifdef VF_PROG    
+	  if(flagTimeReturn && PtrTmp!=&Principal1.DirProc && (VFstatus == ENDVF || PtrTmp!=&Principal1_VF_PROG.DirProc))		// PAsaron 10 segundos fuera de la pantalla principal y estando en FIN??
+	  {
+	   if(VFstatus != ENDVF){
+	     PasarASCII("    ",1);   //borro la pantalla una ves 
+	     ResetScroll();
+	     PtrTmp=&Principal1_VF_PROG.DirProc;											//Volver a la pantalla principal
+	     FstTime=TRUE;
+	   }else{
+	     PasarASCII("    ",1);   //borro la pantalla una ves 
+	     ResetScroll();
+	     PtrTmp=&Principal1.DirProc;											//Volver a la pantalla principal
+	     FstTime=TRUE;
+	   }
+	  }
+	  #else
+	  if(flagTimeReturn && PtrTmp!=&Principal1.DirProc)		// PAsaron 10 segundos fuera de la pantalla principal??
+	  { 
+	    PtrTmp=&Principal1.DirProc;											//Volver a la pantalla principal
+	    FstTime=TRUE;
+	  }
+	  #endif     	 
+
+}

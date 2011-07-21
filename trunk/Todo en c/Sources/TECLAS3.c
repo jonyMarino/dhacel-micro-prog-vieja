@@ -22,6 +22,8 @@
 #include "PE_Types.h"
 #include "teclas.h"
 #include "TimerOld.h"
+#include "boxes.h"
+#include "StaticTimer.h"
 
 #ifdef jony_25_06
 /* Posicion de cada tecla*/
@@ -63,7 +65,6 @@ byte	ValidKey=0;					// tecla presionada. NULL: teclas liberadas
 byte	KeyAnt=0;					// estado anterior
 byte	KeyRampa=0;				// valor de recarga para ir acelerando
 byte	KeyEdge;				  // teclas presionada. Reset en main
-extern	bool	Flag1;				// usado en demora de 10 seg. en la navegacion  
 
 byte	KeyCnt=0;					// contador para generar el tiempo entre repeticiones
 	// teclas presionada. Reset en main
@@ -125,8 +126,8 @@ void Switches(byte Pulsador)
 	  if(KeyAnt==0x02 && ValidKey==0x00 && !Anterior_F) KeyEdge='r';
 
 	  if(ValidKey==0) Anterior_F=FALSE;
-	  Flag1=FALSE;
-	  Timer_Run(TRETURN,&Flag1, UNICO_SET);
+	  flagTimeReturn=FALSE;
+	  Timer_Run(TRETURN,&flagTimeReturn, UNICO_SET);
 	  KeyAnt = ValidKey;
 	  KeyCnt=0;
 	  KeyRampa=KEY_RAMPA_INI;
@@ -156,8 +157,8 @@ void Switches(byte Pulsador)
 				      Anterior_F=TRUE;
 			       }
 			}
-			Flag1=FALSE;
-			Timer_Run(TRETURN,&Flag1, UNICO_SET);
+			flagTimeReturn=FALSE;
+		  Timer_Run(TRETURN,&flagTimeReturn, UNICO_SET);
 	  }
   	#ifndef jony_25_06
   	SwAct=0;

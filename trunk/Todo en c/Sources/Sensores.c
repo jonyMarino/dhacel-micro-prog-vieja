@@ -8,6 +8,7 @@
 #include "Sensores.h"				 
 #include "cnfbox.h"
 #include "Parametros.h"
+#include "boxes.h"
 
 #pragma CONST_SEG DEFAULT
 ////////Tablas de linealización (X= microvolt/10, Y= ºC*10)/////////////////////
@@ -235,4 +236,12 @@ return (int)(*buffer_fil/TfMAX);
             };
 
 
-/* END Linealizacion. */
+void changeSensor(byte NroChanel){
+  if(bufferSensor[NroChanel]!=PRom[R_Sensor+NroChanel]){
+
+ 		A_Sensor(PRom[R_Sensor+NroChanel],NroChanel);	
+ 	  
+	
+  }
+ 
+}

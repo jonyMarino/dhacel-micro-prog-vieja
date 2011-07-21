@@ -14,18 +14,15 @@
 #include "matriz.h"
 #include "display.h"
 #include "TimerOld.h"
+#include "TimeOut.h"
+#include "StaticTimer.h"
+
+
 /* definiciones */
 
-//dan1
 
 #define _DPY_SUP			0							// dpy inferior
 #define _DPY_INF			1							// dpy superior
-
-//#define _DPY_SUP			1							// dpy inferior
-//#define _DPY_INF			0							// dpy superior
-
-
-//dan1
 
 
 
@@ -33,16 +30,17 @@
 #pragma CONST_SEG DEFAULT
 static const byte  DigInfOn[4]={0x10,0x20,0x40,0x80};		// señales de control del display
 static const byte  DigSupOn[4]={0x01,0x02,0x04,0x08};		// señales de control del display
-/*variables externas*/
-extern bool led[NUM_SALIDAS];
+
+bool led[NUM_SALIDAS];
 byte b = 0, d = 0;
 byte c;
 bool Scroll = FALSE;
-extern byte DotNum[CANTIDAD_DISPLAYS];
+byte DotNum[CANTIDAD_DISPLAYS];
 byte Nletras[CANTIDAD_DISPLAYS];
+
 /* funciones externas */
 extern void Switches(byte);
-/* variables externas */
+
 char  DigDpy[CANTIDAD_DISPLAYS][MAX_DIGITOS];		// caracteres decodificados del buffer ascii
 char  Digitos[CANTIDAD_DISPLAYS][MAX_DIGITOS];	// buffer de caracteres ascii a visualizar en 7 segmentos
 extern byte KeyEdge;
@@ -56,7 +54,7 @@ bool HD90_flag=TRUE;
 void ResetScroll(void){
   b=d=0;								//resetear variables de SCROLL
 	Scroll=FALSE;
-	Timer_Run(TIME_SCROLL*2,&Scroll,UNICO_SET);					 //resetear variables de SCROLL
+	Timer_Run(TIME_SCROLL*2,&Scroll,UNICO_SET);	 //resetear variables de SCROLL
 }
 /////////////////////////////////////////////////////////////////////
 // Muestro texto en 7 segmentos y escaneo teclado
@@ -106,7 +104,8 @@ void DpyAndSwitch(void)
   	    b++;
         if (b==Nletras[display])
           b=0;  
-		    Timer_Run(TIME_SCROLL,&Scroll,UNICO_SET);
+        Timer_Run(TIME_SCROLL,&Scroll,ONETIME);
+		    
     }
     c=b+digito;
     if (c>=Nletras[display]){
@@ -165,7 +164,8 @@ void DpyAndSwitch(void)
 		  KeyEdge=0;
     if (KeyEdge=='r' || KeyEdge=='f'){
       HD90_flag = 0;
-      Timer_Run(CHANGE_HD90_TEXT,&HD90_flag,UNICO_SET);     
+      Timer_Run(CHANGE_HD90_TEXT,&HD90_flag,UNICO_SET);
+      
     }
     #endif
 	Display1_PutVal(0);		 //PTA
@@ -177,8 +177,8 @@ void DpyAndSwitch(void)
   	    Scroll=FALSE;
   	    d++;
         if (d==Nletras[display])
-          d=0;  
-		    Timer_Run(TIME_SCROLL,&Scroll,UNICO_SET);        
+          d=0;
+        Timer_Run(TIME_SCROLL,&Scroll,UNICO_SET);    
     }
     c=d+digito;
     if (c>=Nletras[display]){

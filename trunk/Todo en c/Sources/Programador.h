@@ -92,7 +92,7 @@ extern const TProgramas  Programa[MAX_PROGRAMAS];
 #define SegundosSegmento progToSave.segundos_segmento 		
 #define ProgramaActual progToSave.programa_actual 				
 #define SegmentoActual progToSave.segmento_actual 
-extern bool Prog_actualizar;
+
 extern int SegmentoMostrado[CANTIDAD_SAL_CONTROL];
 extern int TiempoEnMinutos[CANTIDAD_SAL_CONTROL];
 //Fin
@@ -111,6 +111,8 @@ bool isProgFinish(byte chan);
 byte get_Lim_Seg(byte programa);
 
 void ActualizarSetPointPrograma(byte canal);
+
+void procesaTeclasProg();
 
 void runPrograma(
 byte canal,
@@ -144,5 +146,6 @@ t_prog_state get_ProgState(byte canal);
 #define get_SP_Programa(chan) SetPointPrograma[chan]
 
 void GuardarPrograma(void); 
+void ActualizarContadoresProg();
 
 #endif

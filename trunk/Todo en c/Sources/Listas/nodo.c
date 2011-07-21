@@ -24,9 +24,9 @@
 **    Description : Constructor del Objeto
 ** ===================================================================
 */
-void initNodo(struct Nodo * nodo,void*_dato){
-    nodo->dato=_dato; 
-    nodo->next=NULL; 
+void initNodo(struct Nodo * _nodo,void*_dato){
+    _nodo->dato=_dato; 
+    _nodo->next=NULL; 
 }
 
 /*
@@ -50,9 +50,9 @@ void* getDato(struct Nodo * nodo){
 **    Description : Setea el puntero al siguiente nodo
 ** ===================================================================
 */
-void setNext(struct Nodo * nodoAnt,struct Nodo * nodo){
-  nodoAnt->next=nodo;
-  nodo->next=NULL;
+void setNext(struct Nodo * nodoAnt,struct Nodo * _nodo){
+  nodoAnt->next=_nodo;
+ // _nodo->next=NULL;
 }
 
 

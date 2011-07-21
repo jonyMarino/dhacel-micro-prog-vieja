@@ -9,7 +9,7 @@ unsigned long BaseTimers_getCuenta(unsigned char NroTime);
 
 bool BaseTimers_moveOut(void * timer,unsigned int NroList);
 
-void BaseTimers_actualizarTimers(unsigned int NroList,unsigned char NroTime);
+void BaseTimers_actualizarTimers(struct Timer* t);
 
 void BaseTimers_incrementar(unsigned int ms,unsigned char NroTime);
 

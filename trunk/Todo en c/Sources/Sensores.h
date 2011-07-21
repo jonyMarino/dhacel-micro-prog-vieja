@@ -87,4 +87,6 @@ int filtro (int val_x,
             long *buffer_fil
             );  
 
+void changeSensor(byte NroChanel);
+
 #endif

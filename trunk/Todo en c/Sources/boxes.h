@@ -7,17 +7,26 @@
 #include "PWM.h"
 #include "TmDt1.h"
 #include "IFsh10.h"
-//#include "Timer.h"
+
 
 extern bool FstTime;
 extern bool save_parametros;
 extern byte Tecla;
 extern char is_box_principal;
-
+extern int bufferSensor[CANTIDAD_CANALES];
+extern bool Mostrar_Proc;
+extern bool flagTimeReturn;
+extern word screen_cont;
+extern int bufferNro;
+extern TDato *buffersDato;
+extern PunteroF PtrTmp;
+extern TPtrBox PtrBox;
 
 byte Escribir(TDato * sDato,int valor);
 
 void Boxes_Init(void);
+
+void isTimeReturnPrincipal();
 
 #ifdef jony_28_06
 void set_MainText(const char * str);  /* Para poner Textos en el Display inferior*/
@@ -27,6 +36,8 @@ void set_MainText1(const char * str);  /* Para poner Textos en el Display inferi
 #endif
 
 void Exit(void);
+
+void executeBoxes();
 
 void TitleHandler(void);
 		
@@ -57,7 +68,6 @@ void SegmentoHandler(void);
 
 void TipoSegHandler(void);
 
-void Num_realtime_Handler(void);
 
 void DiaHandler(void);
 
@@ -122,5 +132,7 @@ byte A_Selftun(int valor, byte salida);
 void A_Adquiriendo(void);
 
 void setLimitesRPM ();
+
+void setBufferSensor();
 
 #endif

@@ -6,7 +6,6 @@
 
 #ifdef MMAX
 
-extern byte DotNum[CANTIDAD_DISPLAYS];
 int bufferMmax;
 bool flagMmax;
 	

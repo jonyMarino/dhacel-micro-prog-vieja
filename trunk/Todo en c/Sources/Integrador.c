@@ -1,4 +1,4 @@
-#include "Mydefines.h"
+
 #include "Integrador.h"
 #include "ADC.h"
 #include "cnfbox.h"
@@ -6,6 +6,7 @@
 #include "Sensores.h"			
 #include "TimerOld.h"
 #include "Parametros.h"
+#include "RlxMTimer.h"
 
 #define NO 0
 #define SI 1
@@ -18,12 +19,9 @@
 
 #ifdef INTEGRADOR
 
-extern bool flag_1seg;
-
 int AjutaDecimales[CANTIDAD_CANALES];
 bool flagReset = FALSE;
-bool firstTime = TRUE;
-word parteAlta;
+
 
 #if CANTIDAD_CANALES == 1
  long Acumulador[CANTIDAD_CANALES]={0};
@@ -37,14 +35,22 @@ word parteAlta;
   
 char contador = 0;
 
+struct RlxMTimer * _Rlxtimer;
+
+void intIntegrador(){
+   _Rlxtimer=RlxMTimer_Init(1000,_sumador,NULL);
+}
+
 void _sumador(void){
-  char i;        
+  char i;
+  static bool firstTime = TRUE;        
   
   integrador_decimales();
                  
   if(firstTime){                
     firstTime = FALSE;
     HabilitarAccionPagApagado();
+    EraseSectorInternal(FLASH_APAGADO_START); // borro la posicion de la flash donde voy a salvar el valor acumulado
     
   }
   
@@ -128,5 +134,11 @@ void integrador_decimales(void){
     
    }
 }
+
+void getValueFlash(){
+  Acumulador[0] = (*(long*)FLASH_APAGADO_START);
+}
+
+
 
 #endif

@@ -17,7 +17,7 @@ extern int valLinealizadoMV[CANTIDAD_CANALES];
 extern unsigned int Humedad;
 #endif
 
-void calculaValorFinal();
+void calculaValorFinal(byte NroChanel);
 int getValCalculado(char nroCanal);
 byte getEstatusResult(char nroCanal);
 void setValCalculado(int val,char nroCanal);

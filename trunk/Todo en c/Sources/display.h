@@ -1,10 +1,14 @@
 #ifndef _DISPLAY_H
 #define _DISPLAY_H
 
-#include "PE_Types.h" 
+#include "PE_Types.h"
+#include "Mydefines.h" 
 
 #define MAX_NUM_DISPLAY 9999
 #define MIN_NUM_DISPLAY -1999
+
+extern byte DotNum[CANTIDAD_DISPLAYS];
+extern bool led[NUM_SALIDAS];
 
 void ResetScroll(void);
 

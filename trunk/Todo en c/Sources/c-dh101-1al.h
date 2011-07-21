@@ -137,7 +137,7 @@
 #define AL_3   6
 #define AL_4   7
 
-#define TRETURN 30000  //tiempo de retorno sin boton en ms
+#define TRETURN 6000  //tiempo de retorno sin boton en ms
 
 
 #define CANTIDAD_CANALES 1 /*Cantidad de canales */

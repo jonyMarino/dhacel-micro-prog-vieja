@@ -12,6 +12,12 @@ typedef struct{
   byte chan;
 }datoAdq;
 
+extern int stateAdq;
+
+void intAdqFlash();
+void ADDAdqFlash();
+void TranferToPC();
+void SetTimeAdq(unsigned int time);
 byte adquirirValor(word index,int val);
 byte BorrarPagAdq(char);
 byte BorrarTodoAdq(int a,byte chan);

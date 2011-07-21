@@ -34,7 +34,7 @@ struct RlxMTimer* RlxMTimer_Init(ulong tiempo,void (*pf)(void*),void * Obj ){
   struct Method* handlerTimer = (struct Method*)malloc(sizeof(struct Method));
   
   if(!rlxMtimer || !handlerTimer) // tengo memoria??
-    return;
+    return NULL;
   
   _RlxMTimer=rlxMtimer;
  
@@ -65,7 +65,8 @@ struct RlxMTimer* RlxMTimer_Init(ulong tiempo,void (*pf)(void*),void * Obj ){
 void RlxMTimer_Delete(struct RlxMTimer * _self){
   
   LinkedList_moveOut(_self->handlerTimerLoop,ListaPrincipal);  //saco el metodo del loop principal
-  Timer_Delete(&(_self->_base->_base),_self->_base->argBase.NroList); //saco el timer de la interrupt 1ms
+  MTimer_Delete((_self->_base));                               //saco el timer de la interrupt 1ms
+  _delete (_self);
 }
 
 /*
@@ -109,26 +110,26 @@ void  RlxMTimer_Handler(void * a){
 
 /**/
 void RlxTimer_setTime(struct RlxMTimer*t, ulong _tiempo){
-  Timer_setTime(&(t->_base->_base),ListaInt1ms,CuntaPrincipal,_tiempo);
+  MTimer_setTime((t->_base),_tiempo);
 }
  
  
 /**/ 
 ulong RlxTimer_getTime(struct RlxMTimer* t){
-  return Timer_getTime(&(t->_base->_base));
+  return MTimer_getTime((t->_base));
 }
  
 /**/
 void RlxTimer_Stop(struct RlxMTimer*t){
-  Timer_Stop(&(t->_base->_base));
+  MTimer_Stop((t->_base));
 }
 
 /**/
 uchar RlxTimer_isfinish(struct RlxMTimer*t){
-  return Timer_isfinish(&(t->_base->_base),ListaInt1ms);
+  return MTimer_isfinish((t->_base));
 }
 
 /**/
 void RlxTimer_Restart(struct RlxMTimer*t){
-   Timer_Restart(&(t->_base->_base),ListaInt1ms,CuntaPrincipal);    
+   MTimer_Restart((t->_base));    
 }
