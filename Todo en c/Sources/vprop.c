@@ -72,6 +72,27 @@ else {
   return sal;
              }
   
+ 
+ 
+void setPWMOut(){
+  int vpout;
+
+  vpout = outvprop(duty_vprop, PRom[R_Topn], PRom[R_Dbnd], 1, &cnt_duty_vprop);
+
+  if(vpout == OPEN){
+    PWM_OnToggle(TRUE,0);
+    PWM_OnToggle(FALSE,1);
+  }
+  else if(vpout == CLOSE){
+    PWM_OnToggle(FALSE,0);
+    PWM_OnToggle(TRUE,1);
+  }
+  else{
+    PWM_OnToggle(FALSE,1);
+    PWM_OnToggle(FALSE,0);
+  }
+
+}
            
  #endif
 

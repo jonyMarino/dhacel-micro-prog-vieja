@@ -6,13 +6,20 @@
 #include "IFsh10.h"
 #include "cnfbox.h"
 #include "TimerOld.h"
+#include "Parametros.h"
+#include "TimeOut.h"
+#include "RlxMTimer.h"
+#include "boxes.h"
+#include "In1.h"
+#include "In2.h"
 
 #if End !=0
   #error se va a tener que inicializar los programas en nada[0]=End
 #endif 
 
+struct RlxMTimer * RlxtimerProg;
+
 static bool pendiente_negativa; //Determina la pendiente para el tipo rampa velocidad
-bool Prog_actualizar;
 
 /////Guardar ante corte//////
 struct TProg progToSave;
@@ -29,7 +36,7 @@ struct TProg progToSave;
 //#define SetPointPrograma progToSave.set_point_programa 				
 #define TemperaturaAnterior progToSave.temperatura_anterior 		
 ////////////////////////
-
+word TiempoProgramaCh[CANTIDAD_SAL_CONTROL];
 
 int SegmentoMostrado[CANTIDAD_SAL_CONTROL];
 int TiempoEnMinutos[CANTIDAD_SAL_CONTROL];
@@ -93,8 +100,16 @@ static bool is_End(byte program, byte segment){
 }
 #endif
 
+/**/
+void BorrarPagApagado(void){
+  (void) EraseSectorInternal(FLASH_APAGADO_START);  
+}
+/**/
+
 void Prog_Init(void){
 byte i;  
+static bool flagBorrado=FALSE;
+
   for(i=0;i<CANTIDAD_SAL_CONTROL;i++){
     ProgramaActual[i]=255;	 
  		#ifdef jony_05_07
@@ -111,11 +126,74 @@ byte i;
  		#endif   
     }
   }
-  #ifdef jony_25_06
-  Timer_Run(1000,&Prog_actualizar,CONTINUO_SET);
-  #endif
+  
+  if(PRom[R_Programa]!=NO_PROGRAMA){
+        t_prog_state state=get_ProgState(0);  
+    
+      if(state==PROG_STOPED)
+        set_MainText("StoP");
+
+      }
+  
+      
+ 	for(i=0;i<CANTIDAD_SAL_CONTROL;i++)	  
+ 		if (PRom[R_Programa+i]!=NO_PROGRAMA) 		  
+ 		  ReestablecerPrograma(i);
+ 	
+  
+  InitTimeOut(2000,&flagBorrado,ONETIME);
+  
+  while (!flagBorrado);
+  
+  BorrarPagApagado();  
+  
+  HabilitarAccionPagApagado();
+   
+  while (save_parametros);                // Por si se cambio algun parametro en ReestablecerPrograma()	
+  
+  RlxtimerProg=RlxMTimer_Init(1000,Prog_ActualizarSetPoints,NULL);
 
 }
+
+
+/**/
+void procesaTeclasProg(){
+  if(PRom[R_Programa]!=NO_PROGRAMA){
+   
+      #ifdef LLAVES_EXT_P
+      
+      if(!In2_GetVal()){
+         Prog_Continue();
+         set_MainText("");
+      }
+      
+      if(!In1_GetVal()){
+         Prog_reset();
+         set_MainText("StoP");
+        
+      }
+      
+      
+      #else
+      
+      if(Tecla=='c'){
+        Prog_Continue();
+        set_MainText("");
+      }
+      if(Tecla=='p'){
+        Prog_reset();
+        set_MainText("StoP");
+      }
+      #endif
+        
+  }
+ 
+
+}
+
+
+
+
 ///////////////////Se fija si se termino de ejecutar el programa//////////
 bool isProgFinish(byte chan){
 byte p,s;
@@ -135,7 +213,7 @@ byte i;
     if(Prog_State[i]==PROG_RUNNING && SegVal[i].tipo_segmento!=End)  
       ActualizarSetPointPrograma(i);
   }
-  Prog_actualizar=0;
+  
 }
 #endif
 
@@ -512,4 +590,19 @@ switch(CondicionTmp){
 void GuardarPrograma(void){
   WriteArray(FLASH_APAGADO_START,0, sizeof(progToSave), (word*)&progToSave);
 }
+
+
+void ActualizarContadoresProg(){
+  byte i;
+    for(i=0;i<CANTIDAD_SAL_CONTROL;i++){
+      if (PRom[R_Programa+i]!=NO_PROGRAMA){
+        TiempoProgramaCh[i]++;        
+        if (TiempoProgramaCh[i]>=1000){
+          ActualizarSetPointPrograma(i);
+          TiempoProgramaCh[i]-=1000;
+        } 
+      }
+    }
+}
+
 #endif

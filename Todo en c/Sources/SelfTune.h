@@ -8,7 +8,10 @@
 //#define St_T_MIN 6000
 #define St_Hist 2
 
+extern dword St_Counter[CANTIDAD_SAL_CONTROL+CANTIDAD_SAL_ALARMA];
 
 void SelfTuneControl(byte chan, int spaut);
+
+void setEstateAutoTune();
 
 #endif

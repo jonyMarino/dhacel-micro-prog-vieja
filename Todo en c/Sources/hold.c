@@ -6,7 +6,6 @@
 
 #ifdef HOLD
 
-extern byte DotNum[CANTIDAD_DISPLAYS];
 int bufferH;
 bool flagHold;
 	

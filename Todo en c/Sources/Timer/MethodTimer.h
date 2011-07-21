@@ -13,7 +13,8 @@
 /*  Definicion del Timer*/
 
 struct MethodTimer{
-  struct Timer _base;
+  struct Timer *_base;
+  struct Method * methodBase;
   argIncs argBase;
 };
 
@@ -34,6 +35,8 @@ uchar MTimer_isfinish(struct MethodTimer*t);
 void MTimer_Restart(struct MethodTimer*t);
 
 bool isStartMTimer(struct MethodTimer*t);
+
+void MTimer_Delete(struct MethodTimer*t);
 
 #define _MethodTimer_getFunction(_timer) ((struct MethodTimer*)_timer)->pf
 

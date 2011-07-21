@@ -10,13 +10,13 @@
 
 /* ************ DH 101 C *************** */
 
-#include "c-dh101-1al.h" /* Compilado */
+//#include "c-dh101-1al.h" /* Compilado */
 //#include "c-dh101-2al.h" /* Compilado */
 //#include "c-dh101-3al.h" /* Compilado */
 
 /* ************ DH 101 P *************** */
 
-//#include "c-dh101P-1al.h" /* Compilado */
+#include "c-dh101P-1al.h" /* Compilado */
 //#include "c-dh101P-2al.h" /* Compilado */
 //#include "c-dh101P-3al.h" /* Compilado */
 

@@ -44,6 +44,8 @@ typedef struct{
  extern volatile const int PRomVF[11];
  extern unsigned char etapasActual;
  extern int nroProgEnAccion;
- 
+ extern int crearProg;
+    
+   
  
 #endif

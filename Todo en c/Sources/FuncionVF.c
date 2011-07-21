@@ -9,6 +9,9 @@
 //#include "EPM203Manejador.hpp"
 #include "vfboxes.h"
 #include "Parametros.h"
+#include "RlxMTimer.h"
+#include "Method.h"
+#include "MethodContainer.h"
 
 #define ENDVF 0
 #define RUNVF  1
@@ -40,6 +43,10 @@ bool spIsMayorMeseta = FALSE;
 
 dword tmp;
 
+struct RlxMTimer * _rlxtimer;
+struct Method* _method;
+
+
 //PresentaValor cartelInicio(NULL,"Comienzo de Ciclo");
 //PresentaValor cartelFin(NULL,"Fin de Ciclo");
 
@@ -57,6 +64,16 @@ dword tmp;
 #define Ti_MES     DatosVF[nroProgEnAccion-1][EtapaCorr-1].tiem   
 #define MaxMin     10                                                     //fija los limites de sobrepaso de la temperatura de meseta
 #define PROTEC     2                                                      //cantidad de veces que compruebo la condicion de fin de rampa
+
+
+void intVF(){
+  _rlxtimer=RlxMTimer_Init(1000,calculoTempInstYtiempoMesetaVF,NULL);
+  _method=initMethod(ProcesoTeclasVF,NULL);
+  MethodContainer_add(_Method,ListaPrincipal);
+
+}
+
+
 
 void calculoTempInstYtiempoMesetaVF (void){     
    static int correc=0;

@@ -103,6 +103,20 @@ static dword Period[NUM_SALIDAS],Duty[NUM_SALIDAS];
 
 #define DutyFree(num) Period[num] - Duty[num]
 
+void resetPWM(){
+  PWM_SetRatio16(0,outc1);
+  PWM_SetRatio16(0,outa1);
+  PWM_SetRatio16(0,outa2);
+  PWM_SetRatio16(0,outa3);		 
+
+  setPWM_period(PWM_Anl,0);	
+  setPWM_period(PWM_Anl,1);	
+  setPWM_period(PWM_Anl,2);	
+  setPWM_period(PWM_Anl,3);	
+}
+
+
+
 /*
 ** ===================================================================
 **     Method      :  TO1_SetPeriod (bean TimerOut)

@@ -16,6 +16,7 @@ extern bool spIsMayorMeseta;
 
 #define getStatusVF   VFstatus
 
+void intVF();
 void calculoTempInstYtiempoMesetaVF (void);
 
 

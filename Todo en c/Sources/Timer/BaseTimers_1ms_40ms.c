@@ -7,11 +7,10 @@
 struct Method m1ms;       
 struct Method m40ms;
 
-argIncs tmp40ms; //debo tener esta variable ya que utilizo el mismo timer para generar ambas interrupt(1ms y 40ms)
 
 void InitBaseTimers_1ms_40ms(){
   static bool soloFirstTime=TRUE;
-  
+  argIncs tmp40ms; //debo tener esta variable ya que utilizo el mismo timer para generar ambas interrupt(1ms y 40ms)
   
   if(soloFirstTime){
     soloFirstTime=FALSE;
@@ -43,14 +42,14 @@ void BaseTimers_1ms_40ms_unlockInc(){
 void BaseTimers_1ms_40ms_inc1(argIncs* argInc1ms){ 
   if(argInc1ms) {
     BaseTimers_incrementar(1,argInc1ms->NroTime);
-    BaseTimers_actualizarTimers(argInc1ms->NroList,argInc1ms->NroTime);
+    ///BaseTimers_actualizarTimers(argInc1ms->NroList,argInc1ms->NroTime);
   }
 }
 
 void BaseTimers_1ms_40ms_inc40(argIncs* argInc40ms){
   if(argInc40ms) {
     BaseTimers_incrementar(TIEMPO_GRABACION,argInc40ms->NroTime);
-    BaseTimers_actualizarTimers(argInc40ms->NroList,argInc40ms->NroTime);
+   // BaseTimers_actualizarTimers(argInc40ms->NroList,argInc40ms->NroTime);
   }
 }
 

@@ -28,10 +28,10 @@ unsigned int Humedad =0;
 #endif
 
 /**/
-void calculaValorFinal(){
+void calculaValorFinal(byte NroChanel){
   
   static bool fisrtTime=TRUE;
-  byte i;
+ 
   int valorLinealizado;
   int vCompTamb;
   long tmpVal;
@@ -43,51 +43,49 @@ void calculaValorFinal(){
     return;
   }
   
-   
-  for(i=0;i<CANTIDAD_CANALES;i++){                                    // recorrer todos los canales
-   
+  
     #ifdef RUVAC
-    	Linealizar(valnorm(i),SENSOR_MV,&valLinealizadoMV[i]);                               //linealizo mv 
-   		valLinealizadoMV[i]=(int)((long)(valLinealizadoMV[i]+getValParametro(R_Offset+i))*getValParametro(R_Gan+i)/1000);          //aplico offset y gan	                                            
+    	Linealizar(valnorm(NroChanel),SENSOR_MV,&valLinealizadoMV[NroChanel]);                               //linealizo mv 
+   		valLinealizadoMV[NroChanel]=(int)((long)(valLinealizadoMV[NroChanel]+getValParametro(R_Offset+i))*getValParametro(R_Gan+i)/1000);          //aplico offset y gan	                                            
     #endif 
    
-    vCompTamb =	CompTempAmb((t_sensor)getValParametro((R_Sensor+i)));          
+    vCompTamb =	CompTempAmb((t_sensor)getValParametro((R_Sensor+NroChanel)));          
    
-    if (SENSOR_Tipo(getValParametro(R_Sensor+i))==TermoCupla)
+    if (SENSOR_Tipo(getValParametro(R_Sensor+NroChanel))==TermoCupla)
   /*como la termocupla me entrega los mv de la diferencia(jc-jf)para compensar debo !sumar los mv de jf*/
-      EstatusResult[i]=Linealizar((long)(valnorm(i)+(long)vCompTamb),(t_sensor)getValParametro(R_Sensor+i),&valorLinealizado);
+      EstatusResult[NroChanel]=Linealizar((long)(valnorm(NroChanel)+(long)vCompTamb),(t_sensor)getValParametro(R_Sensor+NroChanel),&valorLinealizado);
     else
-      EstatusResult[i]=Linealizar(valnorm(i),(t_sensor)getValParametro(R_Sensor+i),&valorLinealizado);
+      EstatusResult[NroChanel]=Linealizar(valnorm(NroChanel),(t_sensor)getValParametro(R_Sensor+NroChanel),&valorLinealizado);
       
      tmpVal=(long)valorLinealizado;
   
     
-     if(SENSOR_Tipo(getValParametro(R_Sensor+i))==TermoResistencia)
-        tmpVal = (long)((long)(valorLinealizado+PRom[R_ACP+i])*(1000+PRom[R_AGP+i])/1000);  
+     if(SENSOR_Tipo(getValParametro(R_Sensor+NroChanel))==TermoResistencia)
+        tmpVal = (long)((long)(valorLinealizado+PRom[R_ACP+NroChanel])*(1000+PRom[R_AGP+NroChanel])/1000);  
    
  
-     if(SENSOR_Tipo(getValParametro(R_Sensor+i))!=Lineal)      
-        tmpVal/= div_dec[SENSOR_Decimales(getValParametro(R_Sensor+i))-getValParametro(R_Decimales+i)];  
+     if(SENSOR_Tipo(getValParametro(R_Sensor+NroChanel))!=Lineal)      
+        tmpVal/= div_dec[SENSOR_Decimales(getValParametro(R_Sensor+NroChanel))-getValParametro(R_Decimales+NroChanel)];  
    
      if(tmpVal>9999) 
-        EstatusResult[i]=ERR_OF;
+        EstatusResult[NroChanel]=ERR_OF;
 	   else if (tmpVal<-1999) 
-	      EstatusResult[i]=ERR_UF;
+	      EstatusResult[NroChanel]=ERR_UF;
 	 
      #ifdef TARA	 
 	      puestaCero();
      #endif	 
 
-	   tmpVal=(long)(tmpVal+getValParametro(R_Offset+i))*getValParametro(R_Gan+i)/1000;         //preciso para pasar a long
+	   tmpVal=(long)(tmpVal+getValParametro(R_Offset+NroChanel))*getValParametro(R_Gan+NroChanel)/1000;         //preciso para pasar a long
 
 
-     ValoresCalculados[i] = filtro ((int)tmpVal,
-                                     getValParametro(R_Filtro1+i),
+     ValoresCalculados[NroChanel] = filtro ((int)tmpVal,
+                                     getValParametro(R_Filtro1+NroChanel),
                                      DELTAT/100,
                                      200,
-                                     &buffer_fil[i]
+                                     &buffer_fil[NroChanel]
                                     );
-    }
+
  
 
     if (PRom[R_Ver]==VER_DIF)

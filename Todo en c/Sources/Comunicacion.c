@@ -14,6 +14,8 @@
 #include "Parametros.h"
 #include "Medicion.h"
 #include "valorControl.h"
+#include "TimeOut.h"
+#include "StaticTimer.h"
 
 #ifdef programador
   #define NUM_DIRS_DHsoft 32
@@ -184,7 +186,6 @@ bool AS1_Tx;
 static byte cantidad_mensajes;  // cantidad de mensajes a enviar sin el CRC
 byte ASespera;
 byte Step=0;
-extern bool DSave;
 byte msn[16];
 byte msn_out[16];
 word crc;

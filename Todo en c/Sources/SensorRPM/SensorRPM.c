@@ -27,6 +27,7 @@
 #include "cnfbox.h" 
 #include "CapturadorPT2.h"
 #include "Parametros.h"
+#include "Medicion.h"
 
 #pragma CONST_SEG DEFAULT
 
@@ -153,7 +154,7 @@ void SenRpm_procesar(void* _self){
       }
     }
     
-
+   setValCalculado(valProv,0); 
  }
 }
 

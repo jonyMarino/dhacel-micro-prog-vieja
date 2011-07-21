@@ -13,7 +13,7 @@ struct Nodo {
 };
 
 
-void initNodo(struct Nodo * nodo,void*_dato);
+void initNodo(struct Nodo * _nodo,void*_dato);
     
 void* getDato(struct Nodo * nodo);
     
@@ -21,7 +21,7 @@ void setDato(struct Nodo * nodo,void* _dato);
     
 struct Nodo* getNext(struct Nodo * nodoAnt);
     
-void setNext(struct Nodo * nodoAnt,struct Nodo * nodo);
+void setNext(struct Nodo * nodoAnt,struct Nodo * _nodo);
     
 unsigned char differ(struct Nodo* node1,struct Nodo* node2);
   

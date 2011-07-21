@@ -214,16 +214,22 @@ byte ADC_Start(char chan)
   OutFlg = FALSE;                      /* Output values aren't available */
   ADfinish = FALSE;
   /* ATD0CTL5: DJM=1,DSGN=0,SCAN=1,MULT=0,??=0,CC=X,CB=X,CA=X */
-   #if CANTIDAD_CANALES == 1
+  
+  #if CANTIDAD_CANALES == 1
+   
    if (chan == 0) ATDCTL5 = 166;            // vx1         /* Start conversions */
    else if (chan==1) ATDCTL5 = 164;					//Tamb
    else ATDCTL5 = 167;											// vz
-   #elif CANTIDAD_CANALES == 2
+   
+  #elif CANTIDAD_CANALES == 2
+   
    if (chan == 0) ATDCTL5 = 166;            // vx1         /* Start conversions */
    else if (chan==1) ATDCTL5 = 165;					//vx2
    else if (chan==2) ATDCTL5 = 164;					//Tamb
    else ATDCTL5 = 167;											// vz
-   #endif
+  
+  #endif
+  
   SumChan=chan;
   return ERR_OK;                       /* OK */
 }
@@ -279,6 +285,12 @@ long int getValADC(unsigned char nroCanal){
 bool isADCready(){
   return AD_proc;
 }
+
+/**/
+void setFlagADCready(bool val){
+   AD_proc=val;
+}
+
 
 /* END ADC. */
 

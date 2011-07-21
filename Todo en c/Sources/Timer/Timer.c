@@ -8,6 +8,16 @@
 #pragma CODE_SEG Timer_CODE 
 #pragma CONST_SEG DEFAULT
 
+
+struct Timer* crearTimer(){
+   struct Timer* t=(struct Timer*)malloc(sizeof(struct Timer));
+ 
+  if(!t)
+    return;  //sin memoria 
+    
+   return t;  
+}
+
  
 /*
 ** ===================================================================
@@ -16,12 +26,11 @@
 **                  valores de configuración del contador
 ** ===================================================================
 */
-void Timer_Init(void* timer,unsigned int NroList,unsigned char NroTime){ 
-  
-  struct MethodTimer* mt=(struct MethodTimer*)timer;
-  struct Timer* t=&(mt->_base);
-  
-  ulong cuenta = BaseTimers_getCuenta(NroTime);
+struct Method* Timer_Init(struct Timer* t,unsigned int NroList,unsigned char NroTime){ 
+  ulong cuenta; 
+  struct Method* m;
+ 
+  cuenta = BaseTimers_getCuenta(NroTime);
  
   t->next_cuenta=cuenta+t->tiempo;
   
@@ -31,8 +40,17 @@ void Timer_Init(void* timer,unsigned int NroList,unsigned char NroTime){
     t->of=FALSE;
   
   t->state=_timerStart;
+  
+  t->argTimer.NroList = NroList;
+  
+  t->argTimer.NroTime = NroTime;
+  
+  m=initMethod(BaseTimers_actualizarTimers,t);
+  
+  MethodContainer_add(m,NroList);
     
-  LinkedList_aniadirFinal(mt,NroList);
+  return m;
+
 
 }
 
@@ -43,7 +61,7 @@ void Timer_Init(void* timer,unsigned int NroList,unsigned char NroTime){
 **    Description : Metodo para destruir el Timer
 ** ===================================================================
 */
-void Timer_Delete(struct Timer* t,unsigned int NroList){
+void Timer_Delete(struct Method* t,unsigned int NroList){
   BaseTimers_moveOut(t,NroList);
 }
 
@@ -88,13 +106,13 @@ void TimerComp(void* timer,unsigned char NroTime){
 **    Description : Regresa la cuenta actual que se resetea al llegar al tiempo
 ** ===================================================================
 */
-ulong Timer_getCuenta(struct Timer* t,unsigned int NroList,unsigned char NroTime){
+ulong Timer_getCuenta(struct Method* mt, struct Timer* t,unsigned int NroList,unsigned char NroTime){
  
   ulong cuentaTmp;
   ulong nextCuentaTmp;
   ulong tiempoTmp;
   
-  if(Timer_isfinish(t,NroList) )
+  if(Timer_isfinish(mt,NroList) )
     return 0;
   
   cuentaTmp = BaseTimers_getCuenta(NroTime);
@@ -113,10 +131,10 @@ ulong Timer_getCuenta(struct Timer* t,unsigned int NroList,unsigned char NroTime
 **    Description : Indica si ya termino la cuenta
 ** ===================================================================
 */
-uchar Timer_isfinish(struct Timer* t,unsigned int NroList){
+uchar Timer_isfinish(struct Method* mt,unsigned int NroList){
   
-  if(t)
-    return !LinkedList_contains(t,NroList);
+  if(mt)
+    return !LinkedList_contains(mt,NroList);
     
   return TRUE;
 }
@@ -127,7 +145,7 @@ uchar Timer_isfinish(struct Timer* t,unsigned int NroList){
 **    Description : Reinicia la cuenta del tiempo
 ** ===================================================================
 */
-void Timer_Restart(struct Timer* t,unsigned int NroList,unsigned char NroTime){
+void Timer_Restart(struct Method* mt,struct Timer* t,unsigned int NroList,unsigned char NroTime){
   
   ulong cuenta = BaseTimers_getCuenta(NroTime);
   
@@ -140,8 +158,8 @@ void Timer_Restart(struct Timer* t,unsigned int NroList,unsigned char NroTime){
   
   t->state=_timerStart;
   
-  if(Timer_isfinish(t,NroList))
-    LinkedList_aniadirFinal(t,NroList);
+  if(Timer_isfinish(mt,NroList))
+    LinkedList_aniadirFinal(mt,NroList);
 }
 
 /*
@@ -150,10 +168,10 @@ void Timer_Restart(struct Timer* t,unsigned int NroList,unsigned char NroTime){
 **    Description : Setea un tiempo nuevo y reinicia la cuenta del tiempo
 ** ===================================================================
 */
-void Timer_setTime(struct Timer* t,unsigned int NroList,unsigned char NroTime,ulong _tiempo){					 
+void Timer_setTime(struct Method* mt,struct Timer* t,unsigned int NroList,unsigned char NroTime,ulong _tiempo){					 
   
   t->tiempo=_tiempo;
-  Timer_Restart(t,NroList,NroTime);
+  Timer_Restart(mt,t,NroList,NroTime);
 }
 
 /*

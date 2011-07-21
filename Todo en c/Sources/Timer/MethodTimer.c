@@ -45,50 +45,27 @@ struct MethodTimer* MTimer_Init(ulong tiempo,void (*pf)(void*),void * Obj){
   
   _MethodTimer=mt;
   
-  /*if(pf==RlxMTimer_OnTime){   // se trata de un RlxMtimer??
-    struct RlxMTimer* rmt=(struct RlxMTimer*)Obj;
-    rmt->_base=mt;
-  } */
-  
-  mt->_base.onTime=pf;
-  
-  mt->_base.Obj=Obj;  
-  
-  mt->_base.tiempo=tiempo;
+  mt->_base = crearTimer();
   
   mt->argBase.NroList=ListaInt1ms;  // siempre utilizo la lista de 1ms
    
   mt->argBase.NroTime=CuntaPrincipal;  // siempre utilizo el nro time cero(cuenta[0]) el resto los dejo para futuras funcionalidades
   
+  mt->_base->onTime=pf;
+  
+  mt->_base->Obj=Obj;  
+  
+  mt->_base->tiempo=tiempo;
+  
   BaseTimers_1ms_40ms_setArguMethod1ms(&(mt->argBase));
   
   InitBaseTimers_1ms_40ms();
   
-  Timer_Init(mt,mt->argBase.NroList,mt->argBase.NroTime);
+  mt->methodBase=Timer_Init(mt->_base,mt->argBase.NroList,mt->argBase.NroTime);
   
+
   return mt;
       
-}
-
-
-
-/*
-** ===================================================================
-**     Method      :  executeMethodsTimer 
-**    Description : funcion a llamar cuando se llega al tiempo
-** ===================================================================
-*/
-
-void executeMethodsTimer(unsigned char NroList){
-  struct Nodo * tmpNodo;
-  
-  tmpNodo=LinkedList_getPrimerNodo(NroList);
-  // ejecuto el primer elemento de la lista
-  if(tmpNodo!=NULL ) {
-     struct Method* m = (struct Method *)getDataObj(tmpNodo);
-    (*(m->pmethod))(m->Obj);
-  }
-   
 }
 
 
@@ -101,35 +78,42 @@ struct MethodTimer* getUltimoMTimer(){
 
 /**/
 void MTimer_setTime(struct MethodTimer*t, ulong _tiempo){
-  Timer_setTime(&(t->_base),ListaInt1ms,CuntaPrincipal,_tiempo);
+  Timer_setTime((t->methodBase),(t->_base),ListaInt1ms,CuntaPrincipal,_tiempo);
 }
 
 /**/ 
 ulong MTimer_getTime(struct MethodTimer* t){
-  return Timer_getTime(&(t->_base));
+  return Timer_getTime((t->_base));
 }
  
 /**/
 void MTimer_Stop(struct MethodTimer*t){
-  Timer_Stop(&(t->_base));
+  Timer_Stop((t->_base));
 }
 
 /**/
 uchar MTimer_isfinish(struct MethodTimer*t){
-   return Timer_isfinish(&(t->_base),ListaInt1ms);
+   return Timer_isfinish((t->methodBase),ListaInt1ms);
 }
 
 /**/
 void MTimer_Restart(struct MethodTimer*t){
-   Timer_Restart(&(t->_base),ListaInt1ms,CuntaPrincipal);    
+   Timer_Restart((t->methodBase),(t->_base),ListaInt1ms,CuntaPrincipal);    
 }
 
-
+/**/
 bool isStartMTimer(struct MethodTimer*t){
-  if(t->_base.state==_timerStart)
+  if(t->_base->state==_timerStart)
     return TRUE;
   
   return FALSE;
+}
+
+/**/
+void MTimer_Delete(struct MethodTimer*t){
+  Timer_Delete((t->methodBase),t->argBase.NroList);
+  _delete (t->_base);
+  _delete (t);
 }
 
 #pragma CODE_SEG MethodTimer_CODE

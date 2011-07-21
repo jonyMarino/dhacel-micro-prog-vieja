@@ -8,6 +8,8 @@
 #include "PWM.h"
 #include "SelfTune.h"
 #include "Parametros.h"
+#include "PID.h"
+#include "Alarmas.h"
 
 
 ////////////AUTO SINTONIA //////////////////////
@@ -16,17 +18,6 @@ byte St_Step[CANTIDAD_SAL_CONTROL+CANTIDAD_SAL_ALARMA];
 int prev_val,St_val_max,St_val_min,St_time_cnt;
 int St_abrt_cnt[CANTIDAD_SAL_CONTROL];
 
-extern char main_text[5];
-extern bool show_main_text;
-
-#ifdef VPROP
-extern int duty_vprop;
-#endif
-
-#pragma DATA_SEG MYDATA
-extern int duty_cont_ch[4];
-extern int duty_alar_ch[4];
-#pragma DATA_SEG DEFAULT
 
 void SelfTuneControl(byte chan,int spaut){
 
@@ -138,3 +129,8 @@ int Prop;
 }
 
 
+void setEstateAutoTune(){
+  if( PRom[R_Stn]!=St_OFF)
+    EscribirWord((word)&PRom[R_Stn],St_OFF);			                // Siempre al empezar Stn en cero
+
+}

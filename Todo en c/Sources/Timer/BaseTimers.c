@@ -23,19 +23,11 @@ bool BaseTimers_moveOut(void * timer,unsigned int NroList){
 }
 
 
-void BaseTimers_actualizarTimers(unsigned int NroList,unsigned char NroTime){
- 
-  struct Nodo * tmpNodo;
-  
- /*ejecuto desde el segundo elemento*/
- tmpNodo=LinkedList_getPrimerNodo(NroList);
-  
- for( tmpNodo=getNext(tmpNodo);tmpNodo;tmpNodo=getNext(tmpNodo)){
-    TimerComp(&(((struct MethodTimer *)getDataObj(tmpNodo))->_base),NroTime);
+void BaseTimers_actualizarTimers(struct Timer* t){
+    
+    TimerComp(t,t->argTimer.NroTime);
          
-     if(!hasNext(tmpNodo))
-      break;    
-  }
+  
 }
 
 unsigned long BaseTimers_getCuenta(unsigned char NroTime){

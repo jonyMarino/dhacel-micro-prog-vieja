@@ -100,6 +100,8 @@ typedef enum{
 
 #define PWM_Last_Period 9
 
+
+void resetPWM();
 byte PWM_SetRatio16(word Ratio,byte salida);		/*Ratio es un valor de 0 a 1000*/
 byte setPWM_period(int Mode,byte salida);
 

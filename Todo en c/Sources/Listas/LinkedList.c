@@ -227,6 +227,7 @@ void LinkedList_deleteNodo(struct Nodo*tmpNodo,struct Nodo*tmpNodoAnterior,unsig
     for(NodoAntTmp= nodo[NroList]; (NodoAntTmp != NULL) && (NodoAntTmp->next != tmpNodo); NodoAntTmp=getNext(NodoAntTmp));
     setNext(NodoAntTmp,getNext(tmpNodo));
   }
+  
   free(tmpNodo);
 }
 

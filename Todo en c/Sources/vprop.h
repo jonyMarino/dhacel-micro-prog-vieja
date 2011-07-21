@@ -11,7 +11,7 @@ int outvprop(int dutyc,								    //lleva apertura y comanda vprop
              long *cont_pos);
 
 
-
+void setPWMOut();
 
 
 
