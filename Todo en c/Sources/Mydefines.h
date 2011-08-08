@@ -12,11 +12,11 @@
 
 //#include "c-dh101-1al.h" /* Compilado */
 //#include "c-dh101-2al.h" /* Compilado */
-//#include "c-dh101-3al.h" /* Compilado */
+#include "c-dh101-3al.h" /* Compilado */
 
 /* ************ DH 101 P *************** */
 
-#include "c-dh101P-1al.h" /* Compilado */
+//#include "c-dh101P-1al.h" /* Compilado */
 //#include "c-dh101P-2al.h" /* Compilado */
 //#include "c-dh101P-3al.h" /* Compilado */
 
@@ -223,4 +223,3 @@
 //#define LLAVES_EXT /*siver para controlar el "inicio" y el "fin" con pulsadores externos(In1 y In2)*/
 #endif 
 
-#define Version "A0411"                    

@@ -1,12 +1,12 @@
 #ifndef Boxes_H
 #define Boxes_H
-/* archivos include */
+
 #include "display.h"
 #include "cnfbox.h"
 #include "PE_Error.h"
 #include "PWM.h"
-#include "TmDt1.h"
 #include "IFsh10.h"
+#include "TeclasYDisplay.h"
 
 
 extern bool FstTime;
@@ -28,12 +28,11 @@ void Boxes_Init(void);
 
 void isTimeReturnPrincipal();
 
-#ifdef jony_28_06
 void set_MainText(const char * str);  /* Para poner Textos en el Display inferior*/
-void set_MainText1(const char * str);  /* Para poner Textos en el Display inferior*/
 
+void AnalisisPuntoDecimal();
 
-#endif
+void handlerTeclasUPoDown(TipoBox tipo);
 
 void Exit(void);
 
@@ -42,8 +41,6 @@ void executeBoxes();
 void TitleHandler(void);
 		
 void TitleProgHandler(void);
-
-void EstadoHandler (void);
 
 void TxtHandler(void);
 

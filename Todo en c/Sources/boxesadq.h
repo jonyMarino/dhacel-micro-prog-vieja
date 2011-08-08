@@ -1,12 +1,10 @@
-#ifndef _BOXES_PROG_H
-#define _BOXES_PROG_H 
+#ifndef _BOXES_ADQ_H
+#define _BOXES_ADQ_H
 
-extern const Textual Adqui_State;
-extern const Numerico ano;
-extern const Numerico mes;
-extern const Numerico dia;
-extern const Numerico hora;
-extern const Numerico intervalo;
-extern const Textual Adquiriendo;
+extern const Titulo titAdq;
+extern const Textual boxAdqHabilitado;
+extern const Textual boxAdqBorrado;
+extern const Textual boxAdqTranfer;
+extern const Numerico boxAdqPeriodo;
 
 #endif

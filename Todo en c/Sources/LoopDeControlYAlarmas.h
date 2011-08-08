@@ -8,6 +8,10 @@
 #include "PID.h"
 #include "Alarmas.h"
 
+#define MEN_STATIC  //MEN_DINAMIC
+
+
+
  struct ArgLoop{
   struct ArgControl *_control;
   struct ArgAlarma *_alarmas;
@@ -16,6 +20,10 @@
  };
  
  void loopDeControlYAlarmas(void* arg);
+
+#ifdef MEN_DINAMIC 
  void intLoopControlYAlarmas(struct ArgLoop* arg);
+#endif
+ 
 
 #endif

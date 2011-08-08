@@ -11,6 +11,7 @@
 #include "In1.h"
 #include "In2.h"
 #include "Alarmas.h"
+#include "Parametros.h"
 
 extern PunteroF PtrTmp;	
 
@@ -83,17 +84,16 @@ const ParamVF  DatosVF[MAX_PROGRAMAS_VF][MAX_ETAPAS_VF] @(FLASH_VF_START+24)={		
 
 
 extern byte BackupArray[MEM_PAGINA];
-extern bool flagAlarma; 
+
 extern word screen_cont;
 
 bool flag_tecla_up=0;
 bool flag_tecla_down=0;
-extern dword rampa_mestaTime;
-extern dword timeCartel;
+
 extern byte Tecla;
 word minutos = 1;
-char flagCartel=1; 
-char flagComCartel=FALSE; 
+
+ 
 char unaVez=0;
 char tecla_d=1;
 extern byte Nletras[CANTIDAD_DISPLAYS];
@@ -102,7 +102,7 @@ char resetMst=0;
 char resetRamp=0;
 char cantDig=0;
 char _msj[MAX_DIGITOS];
-extern byte b; //variable de scrolling 
+
 char unaVuelta=0;
 extern bool SaveNow;
 
@@ -115,14 +115,14 @@ extern const Numerico crearProgN;
 extern const Titulo ProgramaEnAccion;
   
 int velocidadVF,temperaturaVF,tiempoVF;
+
 #ifdef VF_PROG
-int nroProgEnAccion=0;
 int crearProg=0;
 #else
-int nroProgEnAccion=1;
 int crearProg=1;
 #endif
-int cantEtapas=1;
+
+
 unsigned char etapasActual=0;
 int proxBox=0;
 char textDincVel[26];
@@ -137,8 +137,8 @@ const TDato ParametrosVF_Prog[NRO_PARAMETROS_VF]={
 #endif                           
 /*tmpmes1*/{&temperaturaVF,NO_FUNCTION,&PRom[R_LIMs],&PRom[R_Lim_Sup+0],0},
 /*tiemes1*/{&tiempoVF,NO_FUNCTION,&Lim_0,&Lim_9999,0},
-/*R_Nro_prog*/{&nroProgEnAccion,NO_FUNCTION,&Lim_0,&Lim_10,0},
-/*R_etapas*/{&cantEtapas,NO_FUNCTION,&Lim_1,&Lim_10,0},
+/*R_Nro_prog*/{(int*)&(getNProgVF),NO_FUNCTION,&Lim_0,&Lim_10,0},
+/*R_etapas*/{(int*)&(getCantidadEtapasVF),NO_FUNCTION,&Lim_1,&Lim_10,0},
 /*R_Nro_prog_crear*/{&crearProg,NO_FUNCTION,&Lim_0,&Lim_10,0},   
 };
    
@@ -384,7 +384,8 @@ if(Tecla=='r'){
  if (Tecla== 'k') {
   
    etapasActual=0;
-   PasarASCII("    ",1);   //borro la pantalla una ves 
+   PresentarMsj((char*)"    ",1);
+   //PasarASCII("    ",1);   //borro la pantalla una ves 
 	 ResetScroll(); 
  }
 }
@@ -408,7 +409,8 @@ if(Tecla=='r'){
  if (Tecla== 'k') {
   
    etapasActual=0;
-   PasarASCII("    ",1);   //borro la pantalla una ves 
+   PresentarMsj((char*)"    ",1);
+   //PasarASCII("    ",1);   //borro la pantalla una ves 
 	 ResetScroll(); 
  }
 }
@@ -425,7 +427,7 @@ if(FstTime){
 
 if(Tecla=='r'){
   etapasActual++;
-  if((etapasActual+1)>cantEtapas){
+  if((etapasActual+1)>getCantidadEtapasVF){
     etapasActual=0;
     proxBox=0;         //retorno al box principal
   }else {
@@ -442,13 +444,15 @@ if(Tecla=='r'){
    SaveNow=TRUE;
   }
   
-  PasarASCII("    ",1);   //borro la pantalla una ves 
+  PresentarMsj((char*)"    ",1);
+  //PasarASCII("    ",1);   //borro la pantalla una ves 
 	ResetScroll(); 
  }
  
 if (Tecla== 'k') {
   
-   PasarASCII("    ",1);   //borro la pantalla una ves 
+   PresentarMsj((char*)"    ",1);
+   //PasarASCII("    ",1);   //borro la pantalla una ves 
 	 ResetScroll(); 
  }
 
@@ -459,17 +463,16 @@ unsigned int *dir;
 
 //if(FstTime){
 dir=&PRomVF[crearProg];
-cantEtapas=*dir;     // tomo el valor corespondiente de la flash  
+getCantidadEtapasVF=*dir;     // tomo el valor corespondiente de la flash  
  
 NumHandler();
 if(Tecla=='r'){
-  if(cantEtapas!=*dir){ //actualizo el valor en flash , si cambio
-   EscribirWord((word)dir,((word)cantEtapas)); 
+  if(getCantidadEtapasVF!=*dir){ //actualizo el valor en flash , si cambio
+   EscribirWord((word)dir,((word)getCantidadEtapasVF)); 
    SaveNow=TRUE;
   }
  }
  
- CantEtapas=cantEtapas; 
 }
 
 
@@ -640,7 +643,7 @@ char repet=0;
     char new_text[5];
   
     
-    if(VFmod==RMPVF || flag_tecla_up==1){
+    if(getStatusVF==RMPVF || flag_tecla_up==1){
      
        flag_tecla_up=0;
        
@@ -659,7 +662,8 @@ char repet=0;
        if(resetRamp==0){
          resetRamp=1;
          resetMst=0; 
-         PasarASCII("    ",1);   //borro la pantalla una ves
+         PresentarMsj((char*)"    ",1);
+         //PasarASCII("    ",1);   //borro la pantalla una ves
          //ResetScroll();
        }
        
@@ -689,7 +693,7 @@ char repet=0;
     char new_text[18];
   
     
-    if(VFmod==RMPVF || flag_tecla_up==1){
+    if(getStatusVF==RMPVF || flag_tecla_up==1){
      
        flag_tecla_up=0;
        
@@ -699,11 +703,11 @@ char repet=0;
        new_text[3]='m';
        new_text[4]='P';
        new_text[5]='A';
-       if((EtapaCorr)/10){
-          new_text[6]=(EtapaCorr)/10+'0'; 
-          new_text[7]=(EtapaCorr)%10+'0';
+       if((getNEtapaActualVF)/10){
+          new_text[6]=(getNEtapaActualVF)/10+'0'; 
+          new_text[7]=(getNEtapaActualVF)%10+'0';
       } else  { 
-          new_text[6]=(EtapaCorr+'0');
+          new_text[6]=(getNEtapaActualVF+'0');
           new_text[7]=' ';   
       }
        
@@ -714,12 +718,13 @@ char repet=0;
        if(resetRamp==0){
          resetRamp=1;
          resetMst=0; 
-         PasarASCII("    ",1);   //borro la pantalla una ves
+         PresentarMsj((char*)"    ",1);
+         //PasarASCII("    ",1);   //borro la pantalla una ves
          ResetScroll();
        }
        
     }else {
-       if(rampa_mestaTime>(60*minutos))
+       if(getTimeVF>(60*minutos))
          minutos++;
      
        new_text[0]=' ';
@@ -729,11 +734,11 @@ char repet=0;
        new_text[4]='E';
        new_text[5]='t';
        new_text[6]='A';
-       if((EtapaCorr)/10){
-          new_text[7]=(EtapaCorr)/10+'0'; 
-          new_text[8]=(EtapaCorr)%10+'0';
+       if((getNEtapaActualVF)/10){
+          new_text[7]=(getNEtapaActualVF)/10+'0'; 
+          new_text[8]=(getNEtapaActualVF)%10+'0';
       } else  {  
-          new_text[7]=(EtapaCorr+'0');
+          new_text[7]=(getNEtapaActualVF+'0');
           //new_text[7]=' '; 
       } 
          new_text[8]=' ';
@@ -774,7 +779,8 @@ char repet=0;
        if(resetMst==0){
          resetRamp=0;
          resetMst=1;
-         PasarASCII("    ",1);   //borro la pantalla una ves 
+         PresentarMsj((char*)"    ",1);
+         //PasarASCII("    ",1);   //borro la pantalla una ves 
          ResetScroll();
        } 
        
@@ -784,7 +790,7 @@ char repet=0;
     char new_text[22];
   
     
-    if(VFmod==RMPVF || flag_tecla_up==1){
+    if(getStatusVF==RMPVF || flag_tecla_up==1){
      
        flag_tecla_up=0;
        
@@ -814,12 +820,13 @@ char repet=0;
        if(resetRamp==0){
          resetRamp=1;
          resetMst=0; 
-         PasarASCII("    ",1);   //borro la pantalla una ves
+         PresentarMsj((char*)"    ",1);
+         //PasarASCII("    ",1);   //borro la pantalla una ves
          ResetScroll();
        }
        
     }else {
-       if(rampa_mestaTime>(60*minutos))
+       if(getTimeVF>(60*minutos))
          minutos++;
      
        new_text[0]=' ';
@@ -872,7 +879,8 @@ char repet=0;
        if(resetMst==0){
          resetRamp=0;
          resetMst=1;
-         PasarASCII("    ",1);   //borro la pantalla una ves 
+         PresentarMsj((char*)"    ",1);
+         //PasarASCII("    ",1);   //borro la pantalla una ves 
          ResetScroll();
        } 
        
@@ -892,10 +900,10 @@ char repet=0;
 void ProcesoTeclasVF(void){
 
 #ifdef VF_BKR
-  CantEtapas = 1;
+  getCantidadEtapasVF = 1;
 #endif
 
-if((is_box_principal==1 || is_box_principal==3) && nroProgEnAccion!=0 /*&& flagCartel!=0*/){
+if((is_box_principal==1 || is_box_principal==3) && getNProgVF!=0){
   
 /* proceso Tecla UP */  // siempre pone la variable "NroEtapas" en 1 para inicar
 #ifdef LLAVES_EXT
@@ -910,13 +918,14 @@ if((is_box_principal==1 || is_box_principal==3) && nroProgEnAccion!=0 /*&& flagC
      is_box_principal=3;
    #endif    
 	   tecla_d=0; 
-	   EtapaCorr = 1;
-	   fistTime = TRUE;
+	   getNEtapaActualVF = 1;
+	   datosVF.fistTime = TRUE;
 	   flag_tecla_up=1;
-	   rampa_mestaTime=0;
-     VFstatus = RUNVF;
+	   getTimeVF=0;
+     getModeVF = RUNVF;
      #ifndef MSJ_CORTO
-     PasarASCII("    ",1);   //borro la pantalla una ves 
+     PresentarMsj((char*)"    ",1);
+     //PasarASCII("    ",1);   //borro la pantalla una ves 
 	   ResetScroll();
 	   #endif
 	 #ifdef VF_PROG  
@@ -924,14 +933,14 @@ if((is_box_principal==1 || is_box_principal==3) && nroProgEnAccion!=0 /*&& flagC
    #endif 
   }
   
-//#if defined(COFACO) || defined(VF101) || defined(SIMCIC_1)
+
   if (Tecla=='k'){ 
     if(isAlarmaConet==TRUE){ // si la alarma esta conectada y se presiona "R" se desconecta
       isAlarmaConet=FALSE;    // esto es asi solo en el aparato "COFACO"
       tecla_d=1;   
      }
   }
-//#endif 
+
   
 	/* proceso Tecla down */ // incrementa la variable "NroEtapas" (si es cero no)
 #ifndef VF_PROG 	
@@ -950,25 +959,27 @@ if((is_box_principal==1 || is_box_principal==3) && nroProgEnAccion!=0 /*&& flagC
      #endif
 	    
 	   
-	   if(EtapaCorr!=0 && EtapaCorr<CantEtapas){
-	    EtapaCorr++;
-	    VFmod=RMPVF;
-	    tempActVF = DatosVF[nroProgEnAccion-1][EtapaCorr-2].tem;
-	    rampa_mestaTime=0;
+	   if(getNEtapaActualVF!=0 && getNEtapaActualVF<getCantidadEtapasVF){
+	    getNEtapaActualVF++;
+	    getStatusVF=RMPVF;
+	    getSpVF = DatosVF[getNProgVF-1][getNEtapaActualVF-2].tem;
+	    getTimeVF=0;
 	    minutos=1;
 	    flag_tecla_down=1;
 	    #if !defined (MSJ_CORTO) && !defined (VF_PROG)
-	    PasarASCII("    ",1);   //borro la pantalla una ves 
+	    PresentarMsj((char*)"    ",1);
+	    //PasarASCII("    ",1);   //borro la pantalla una ves 
 	    ResetScroll();
 	    #endif
 	    
 	   }
 	   else{
-	    tempActVF=0;
+	    getSpVF=0;
 	    minutos=1;
-	    VFstatus = ENDVF;
+	    getModeVF = ENDVF;
 	    #if !defined (MSJ_CORTO) && !defined (VF_PROG)
-	    PasarASCII("    ",1);   //borro la pantalla una ves 
+	    PresentarMsj((char*)"    ",1);
+	    //PasarASCII("    ",1);   //borro la pantalla una ves 
 	    ResetScroll();
 	    #endif
 	    
@@ -983,77 +994,17 @@ if((is_box_principal==1 || is_box_principal==3) && nroProgEnAccion!=0 /*&& flagC
  #ifdef VF_PROG 	
 	if (Tecla=='u'){ 
 	  if(PtrTmp==&Principal1.DirProc){
-	      tempActVF=0;
+	      getSpVF=0;
 	      minutos=1;
-	      VFstatus = ENDVF;
+	      getModeVF = ENDVF;
 	  }
 	
 	}
  #endif
 }
 
-/************************Carteles******************************************/
 
-bool cartelesHandler (){
- 
- if(timeCartel<=REP_TIME && flagCartel!=1){
- // flagComCartel=TRUE;
- #ifndef MSJ_CORTO 
-  if(unaVez==0){
-    PasarASCII("    ",1);   //borro la pantalla una ves
-    unaVez=1 ;
-  }
- #endif
-  flagComCartel=TRUE;
- #ifdef MSJ_CORTO
-  set_MainText("Pcom");
- #else 
-  set_MainText("    ProGrAmA comPLEto   ");
-  //muestraUnaVez ("PrOGrAmA cOmPLEtO");
- #endif
-  
-  return 0;   
- }else {
-   flagComCartel=FALSE;
-   timeCartel=0;
-   unaVez=0;
-   return 1;
- }
-}
 
-/**************************************************************************/
 
-void muestraUnaVez (char * msj){
- 
- char i,k;
- 
- _msj[0]=' ';
- _msj[1]=' ';
- _msj[2]=' ';
- _msj[3]=' ';
-// _msj[4]=' ';
- 
- if(unaVez==0){
-    PasarASCII("    ",1);   //borro la pantalla una ves
-    unaVez=1 ;
-    unaVuelta=0;
-    
-  for(i=4,k=0;msj[k]!='\0'&&i<MAX_DIGITOS;i++,k++){
-   
-    _msj[i]=msj[k];
-  
- }    
-   cantDig=k;
- }
- 
-  if(b<cantDig && unaVuelta ==0){
-    set_MainText(_msj);
-    
-  }else{
-    unaVuelta=1;
-    PasarASCII("    ",1);   //borro la pantalla una ves 
-     
-  }
-} 
 
 #endif

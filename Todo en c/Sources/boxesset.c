@@ -36,12 +36,6 @@ extern const Textual C2TAL;
 extern const Textual Version1;
 extern const Numerico Id;
 extern const Numerico SetC;
-
-extern const Numerico Vrmp1;
-
-#ifndef programador
- extern const Textual Estado;
-#endif
 extern const Numerico Topn;
 extern const Numerico Dbnd;
 
@@ -446,7 +440,7 @@ const Numerico Dbnd={
 /* Para Cambiar Var a mostrar en dpy inferior*/
 /*********************************************/
 #ifdef jony_28_06
-extern int dutytmp;
+
  
   int DirPar=(int)&SetPoint[R_SetPoint+0];
  

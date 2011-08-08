@@ -17,10 +17,12 @@ void mantenerIndicacion (void){
   if(!In1_GetVal()){
      bufferH=getValCalculado(0);
      flagHold=FALSE;
-     Pasar_Numero(getValCalculado(0),0,DotNum[0]);  
+     PresentarValor(getValCalculado(0),0);
+     //Pasar_Numero(getValCalculado(0),0,DotNum[0]);  
   } else {
       flagHold=TRUE;
-      Pasar_Numero(bufferH,0,DotNum[0]);   
+      PresentarValor(bufferH,0);
+      //Pasar_Numero(bufferH,0,DotNum[0]);   
   }
 }
 

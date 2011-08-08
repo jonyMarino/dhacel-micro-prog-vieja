@@ -51,7 +51,7 @@ void setSetPoint(byte NroChanel){
 		 
 		 
 		 #ifdef VF
-		    SetPoint[0] = tempActVF;
+		    SetPoint[0] = getSpVF;
 		 #endif
 		 
 		 #ifdef DOBLE_SP

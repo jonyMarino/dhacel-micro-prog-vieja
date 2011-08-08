@@ -22,37 +22,29 @@
 #endif
 
 #ifdef ADQ
- #include "BTFPConf.h"
  #include "boxesPrn.h"
+ #include "boxesAdq.h"
+ #include "adq.h"
 #endif
+
+
+#ifdef INTEGRADOR
 #include "IntegradorBoxes.h"
-#include "adq.h"
+#endif
 
 #pragma CONST_SEG DEFAULT 
 #pragma STRING_SEG DEFAULT
 
-extern const Textual Ccalstn;
-
-extern const Textual C1STN;
-
-#ifndef programador
-extern const Textual Estado;
-#endif
-extern Titulo Colcal;
-
-/* Definicion de las estructuras de los boxes de navegacion */
-/************************************************************/
-/*		void(*DirTask)(void);		funcion que ejecuta tareas especiales de c/box*/
 
 ///VARIABLES EXTERNAS QUE UTILIZAN LOS BOXES //////////////
-extern int Estado_Adquisicion;															
 
 ////Las de Programacion/////////
 int Lim_Segmento2[CANTIDAD_SAL_CONTROL];  /* Limite para el segmento que se puede cambiar mientras corre*/
 int Lim_TieSeg[CANTIDAD_SAL_CONTROL]; 
-/////////////////////////////////
+
 int Lim_Inf_ch[CANTIDAD_CANALES],Lim_Sup_ch[CANTIDAD_CANALES];
 int Lim_Dec[CANTIDAD_CANALES];
+
 const int Lim_m9999=-9999;
 const int Lim_m1999=-1999;
 const int Lim_m1=-1;
@@ -70,7 +62,6 @@ const int Lim_10=10;
 const int Lim_24=24;
 const int Lim_80=80;
 const int Lim_255=1000;
-
 const int Lim_600=600;
 const int Lim_1000=1000;
 const int Lim_1300=1300;
@@ -78,18 +69,12 @@ const int Lim_1500=1500;
 const int Lim_9999=9999;
 const int Lim_999=999;
 const int Lim_3600=3600;
-#ifdef jony_28_06
 const int Lim_32767=32767;
-#endif
 
-#ifdef prog_viejo
 const int LimInf_Seg=1;
-#else
-const int LimInf_Seg=0;
-#endif
-
 
 const int Limite_sensor_Sup=NUM_SENSORES;
+
 #if defined (_PRINTER) || defined(ADQ)
 const int Lim_12 = 12;
 const int Lim_31 = 31;
@@ -98,19 +83,23 @@ const int Lim_2008 = 2008;
 const int Lim_2099 = 2099;
 const int Lim_2359 = 2359;
 #endif
-extern const Numerico C1SP102;
+
+
 
 /************************************/
 /* Definicion y armado de los boxes */
 /************************************/
 #ifdef VF_PROG
 extern const NumericoRO Principal1;
+extern const Numerico Principal1_VF_PROG;
 #else
 extern const Numerico Principal1;
 #endif
 
-extern const Titulo alarmas;
+extern const Numerico C1SP102;
 
+extern const Numerico Codigo1;
+extern const Titulo alarmas;
 extern const Numerico C1SP;
 extern const Numerico C1POT;
 extern const Numerico AL1;
@@ -119,37 +108,26 @@ extern const Numerico AL3;
 extern const Numerico P1;
 extern const Numerico Segmento1;
 extern const Numerico SegundosSegmento1;
+
 #ifdef LOBOV
 extern const NumericoRO Indicacion;
 #endif
 
-#ifdef VF_PROG
- extern const Numerico Principal1_VF_PROG;
-#endif
 
 #if  CANTIDAD_CANALES>1
+extern const Numerico LimiteInferior2;
+extern const Numerico LimiteSuperior2;
+extern const Numerico PotenciaInferior2;
+extern const Numerico PotenciaSuperior2;
 extern const Numerico C2SP;
 extern const Numerico C2POT;
 extern const Numerico C2AL1;
 extern const Numerico P2;
+
 #elif defined(DOBLE_SP)
  extern const Numerico DSP;
 #endif
 
-extern const Numerico Codigo1;
-
-#ifdef _PRINTER
-extern const Titulo titImpresion;
-extern const Textual boxPrnHabilitado;
-#endif
-
-#ifdef ADQ
-extern const Titulo titAdq;
-extern const Textual boxAdqHabilitado;
-extern const Textual boxAdqBorrado;
-extern const Textual boxAdqTranfer;
-extern const Numerico boxAdqPeriodo;
-#endif
 
 extern const Titulo Sintonia;
 extern const Titulo Calibracion;
@@ -160,75 +138,6 @@ extern const Numerico LimiteSuperior1;
 extern const Numerico PotenciaInferior1;
 extern const Numerico PotenciaSuperior1;
 
-
-#if  CANTIDAD_CANALES>1
-extern const Numerico LimiteInferior2;
-extern const Numerico LimiteSuperior2;
-extern const Numerico PotenciaInferior2;
-extern const Numerico PotenciaSuperior2;
-#endif
-
-#ifdef programador
-extern const Titulo Programas;
-#endif
-
-#ifdef _PRINTER
-byte setIntervaloVista(int valor,byte chan){
-  ManejadorImpresionPersistente_setIntervalo(valor);
-   return 0; 
-}
-
-byte  setHabilitadoVista(int valor,byte chan){
-  ManejadorImpresionPersistente_setHabilitado(valor);
-  return 0;
-}	
-
-
-byte  setFuenteVista(int valor,byte chan){
-  EPM203Manejador_setFuente(valor);
-  return 0;
-}	
-
-byte  setDireccionVista(int valor,byte chan){
-  EPM203Manejador_setDireccion(valor);
-  return 0;
-}	
-
-#endif
-
-				
-
-#ifdef RPM
-
- byte  setPulsosPorVuelta(int valor,byte chan){
-  
-     SenRpm_setPulsosPorVuelta(&sensorRPM,valor);
-  return 0;
-}	
-
-byte  setDecimalesRpm(int valor,byte chan){
-  
-   EscribirWord((word)&PRom[R_Decimales],valor);
-   Lim_Inf_ch[0]= 9999;
-   Lim_Sup_ch[0]= 9999;
-   SenRpm_setDecimales(&sensorRPM,valor);
-  return 0;
-}	
-
-byte setFiltro(int valor,byte chan){
-   
-   SenRpm_setFiltro(&sensorRPM,valor);
-  return 0;
-}	
-
-
-byte setAjuste(int valor,byte chan){
-   
-   SenRpm_setAjusteGanancia(&sensorRPM,valor);
-  return 0;
-}	
-
-#endif  
 
 const TDato Parametros[R_ATA+1]={
 /*SP1(0)*/{&PRom[R_SetPoint], NO_FUNCTION, &PRom[R_Lim_Inf+0], &PRom[R_Lim_Sup+0], CHAN_1},	 //0
@@ -393,10 +302,10 @@ const TDato Parametros[R_ATA+1]={
 #endif
 
 #ifdef ADQ
-/*None54*/{&bTConf.anio,setAnioDT,&Lim_2008,&Lim_2099,CHAN_1},
-/*None55*/{&bTConf.mes,setMesDT,&Lim_1,&Lim_12,CHAN_1},
-/*None56*/{&bTConf.dia,setDiaDT,&Lim_1,&Lim_31,CHAN_1},
-/*None57*/{&bTConf.dia,setHoraDT,&Lim_0,&Lim_2359,CHAN_1},
+/*None54*/{&PRom[R_PrnAnio],NULL,&Lim_2008,&Lim_2099,CHAN_1},
+/*None55*/{&PRom[R_PrnMes],NULL,&Lim_1,&Lim_12,CHAN_1},
+/*None56*/{&PRom[R_PrnDia],NULL,&Lim_1,&Lim_31,CHAN_1},
+/*None57*/{&PRom[R_PrnHora],NULL,&Lim_0,&Lim_2359,CHAN_1},
 /*R_AdqHabilitado*/{&PRom[R_AdqHabilitado],setflagFechaHora,&Lim_0,&Lim_2,CHAN_1},
 /*R_AdqBorrado*/{&PRom[R_AdqBorrado],BorrarTodoAdq,&Lim_0,&Lim_2,CHAN_1}, 
 /*R_AdqTranfer*/{&PRom[R_AdqTranfer],NO_FUNCTION,&Lim_0,&Lim_2,CHAN_1},
@@ -649,7 +558,6 @@ const PunteroF R_C1SP102[7]={
 			&AL1.DirProc,						                        //Proximos estados
 			&Principal1.DirProc,						                      //Proximos estados
 };  
-//#endif
 
 
 const Numerico C1SP={
@@ -811,26 +719,6 @@ const Numerico AL3 =	                                //nombre variable
 			#endif
 #endif
 			};
-								 
-#ifdef _PRINTER
-
-static const char * SN[2]={
-      "no  ",									
-			"Si  "
-
-};
-
-const Textual boxPrnHabilitado=
-      {TxtHandler,						/* funcion que procesa al box*/
-			&Parametros[R_PrnHabilitado],											/* direccion en la E2Prom - el EEProm Start, if FALSE no guarda valor*/
-			"ImPriMir    ",									//nombre display
-			SN,             // Array donde estan los textos
-			NULL,						 //parametro que modifica.
-			(PunteroF*)&Principal1.DirProc,NULL					 //Proximos estados	
-      };
-      
-#endif
-
 
 #ifdef programador
 
@@ -850,27 +738,6 @@ const Numerico P1 =	                                    //nombre variable
 			};
 
 
-/*#ifndef prog_viejo 
-
-const NumericoRO Segmento1 =	                                    //nombre variable
-      {NumHandler,						                          // funcion que procesa al box
-      &SegmentoActual[0],											          // direccion en la E2Prom - el EEProm Start, if FALSE no guarda valor
-			"SEG1",							                              //nombre display
-			0,											                          //pos punto dec	
-			NULL,							                                //parametro que modifica. 
-			(PunteroF*)&SegundosSegmento1.DirProc,NULL			 //enter rap,enter mant
-			};
-
-const NumericoRO SegundosSegmento1 =	                                    //nombre variable
-      {Num_realtime_Handler,	                          // funcion que procesa al box
-      ((int *)&SegundosSegmento[0])+1,										          // direccion en la E2Prom - el EEProm Start, if FALSE no guarda valor
-			"tIE1",							                              //nombre display
-			0,											                          //pos punto dec
-			NULL,							                                //parametro que modifica. 
-			(PunteroF*)&AL1.DirProc,NULL			 //enter rap,enter mant
-			};
-
-#else		*/
 
 const Numerico Segmento1 =	                                    //nombre variable
       {NumHandler,						                          // funcion que procesa al box
@@ -889,9 +756,7 @@ const Numerico SegundosSegmento1 =	                                    //nombre 
 			NULL,							                                //parametro que modifica. 
 			(PunteroF*)&AL1.DirProc,NULL			 //enter rap,enter mant
 			};			
-/*#endif*/
 
- 
 
 #endif
 			
@@ -1001,91 +866,10 @@ const Numerico Codigo1={
 			 R_Codigo2,&Principal1.DirProc 
 			 #endif
 			#endif
-//			#endif
+
 			};
 
-/* Definicion de los titulos */
-/*****************************/
-#ifdef _PRINTER
 
-const Titulo titImpresion={ 
-      TitleHandler,										// funcion que procesa al box
-			"Prn ",													//nombre display
-			" -- ",													//nombre display
-			NULL,											  //parametro que modifica.
-			#ifdef programador
-			(PunteroF*)&boxAnio.DirProc,&Programas.DirProc	//Proximos estados	
-			#else
-			(PunteroF*)&boxAnio.DirProc,&Sintonia.DirProc		//Proximos estados	
-			#endif
-			};
-			
-#endif			
-
-#ifdef ADQ
-
-static const char * SNA[2]={
-      "no  ",									
-			"Si  "
-
-};
-
-static const char * SNAH[3]={
-      "no  ",									
-			"Si  ",
-			"FULL"
-
-};
-
-const Titulo titAdq={ 
-      TitleHandler,										// funcion que procesa al box
-			"Adq ",													//nombre display
-			"  AdqUiSicion  ",							//nombre display
-			NULL,											  //parametro que modifica.
-			
-			&boxAdqHabilitado.DirProc,&Sintonia.DirProc		//Proximos estados	
-		
-			};
-			
-const Textual boxAdqHabilitado=
-      {TxtHandlerAdqHAbilitacion,						/* funcion que procesa al box*/
-			&Parametros[R_AdqHabilitado],											/* direccion en la E2Prom - el EEProm Start, if FALSE no guarda valor*/
-			"AdqUirir    ",									//nombre display
-			SNAH,             // Array donde estan los textos
-			NULL,						 //parametro que modifica.
-			(PunteroF*)&boxAdqBorrado.DirProc,NULL					 //Proximos estados	
-      };
- 
-const Textual boxAdqBorrado=
-      {TxtHandlerAdq,						/* funcion que procesa al box*/
-			&Parametros[R_AdqBorrado],											/* direccion en la E2Prom - el EEProm Start, if FALSE no guarda valor*/
-			"borrAr    ",									//nombre display
-			SNA,             // Array donde estan los textos
-			NULL,						 //parametro que modifica.
-			(PunteroF*)&boxAdqTranfer.DirProc,NULL					 //Proximos estados	
-      }; 
-      
-
-const Textual boxAdqTranfer=
-       {TxtHandler,						/* funcion que procesa al box*/
-			&Parametros[R_AdqTranfer],											/* direccion en la E2Prom - el EEProm Start, if FALSE no guarda valor*/
-			"trAnSFErir    ",									//nombre display
-			SNA,             // Array donde estan los textos
-			NULL,						 //parametro que modifica.
-			(PunteroF*)&boxAdqPeriodo.DirProc,NULL					 //Proximos estados	
-      };
-      
-const Numerico boxAdqPeriodo =	                                //nombre variable
-      {NumHandler,						                          // funcion que procesa al box
-      &Parametros[R_AdqPeriodo],											              // direccion en la E2Prom - el EEProm Start, if FALSE no guarda valor
-			"intErVAlo   ",							                              //nombre display
-			DECIMALES_CANAL1,											            //pos punto dec
-			NULL,							                                //parametro que modifica. 
-			(PunteroF*)&boxAnio.DirProc,NULL			          //enter rap,enter mant		
-			};                 
-
-#endif
-				
 /* Definicion de los titulos */
 /*****************************/
 
@@ -1123,8 +907,6 @@ const Titulo Sintonia={
 		#ifdef CCAL
 			(PunteroF*)&C1RES.DirProc,&Colcal.DirProc,					//Proximos estados
     #else
-    //#ifdef DH102
-      //(PunteroF*)&C1RES.DirProc,&Principal1.DirProc,					//Proximos estados
 		#if defined RPM
 		  (PunteroF*)&C1RES.DirProc,&_RPM.DirProc,
 		#else	
