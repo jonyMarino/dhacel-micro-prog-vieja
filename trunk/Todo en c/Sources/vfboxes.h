@@ -37,9 +37,8 @@ typedef struct{
  extern const Numerico nroProg;
  extern const Titulo ProgramaEnAccion;
  
- extern char flagCartel;
+ extern word minutos;
  extern char tecla_d;
- extern char flagComCartel;
  extern const ParamVF  DatosVF[MAX_PROGRAMAS_VF][MAX_ETAPAS_VF];
  extern volatile const int PRomVF[11];
  extern unsigned char etapasActual;

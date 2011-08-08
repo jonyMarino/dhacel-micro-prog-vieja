@@ -13,7 +13,7 @@ struct ArgAlarma{
 };
 
 extern bool flagAlarmaConet; 
-extern int duty_alar_ch[CANTIDAD_CANALES];
+extern int duty_alar_ch[ALARMAS_CH1];
 
 #define isAlarmaConet  flagAlarmaConet
 

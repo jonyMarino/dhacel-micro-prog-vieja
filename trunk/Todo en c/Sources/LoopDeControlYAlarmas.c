@@ -6,13 +6,14 @@
 #include "teclas.h"
 #include "boxes.h"
 
- struct Method* Loopmethod;
+#ifdef MEN_DINAMIC 
+struct Method* Loopmethod;
  
 void intLoopControlYAlarmas(struct ArgLoop* arg){
   Loopmethod=initMethod(loopDeControlYAlarmas,arg);
   MethodContainer_add(Loopmethod,ListaPrincipal);
 }
-
+#endif
 
 void loopDeControlYAlarmas(void* arg){
   byte i;

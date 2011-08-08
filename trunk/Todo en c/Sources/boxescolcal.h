@@ -10,6 +10,8 @@
 
 extern const Titulo Calibracion;
 extern const Numerico Ganancia1;
+extern const Textual Ccalstn;
+extern const Titulo Colcal;
 extern int flagsst;
 
 void monit_colcal(void);

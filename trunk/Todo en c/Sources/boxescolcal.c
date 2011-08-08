@@ -53,7 +53,6 @@ El boton Reset togglea entre manual y cal
 
 extern bool show_main_text;
 
-extern int dutytmp;
 int flagsst = 1;
 
 

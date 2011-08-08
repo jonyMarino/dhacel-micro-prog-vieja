@@ -14,6 +14,8 @@ long buffer_deriv[CANTIDAD_CANALES]={0};
 int deriv[CANTIDAD_CANALES]={0};
 int duty_cont_ch[CANTIDAD_CANALES]={0};
 
+int dutytmp; 
+
 #ifdef VPROP
 int duty_vprop;
 long cnt_duty_vprop = 0;
@@ -22,7 +24,7 @@ long cnt_duty_vprop = 0;
 void calculosDeControl(struct ArgControl* arg){
   int Dr;
   long auxiliar;
-  int dutytmp; 
+  
   
 if (getValParametro(R_Stn+(arg->NroControl)) != Stc){                                            //primero veo stune
 
@@ -81,7 +83,7 @@ if (getValParametro(R_Stn+(arg->NroControl)) != Stc){                           
  #else
  
  #ifdef VF
- if(getStatusVF == ENDVF)
+ if(getModeVF == ENDVF)
    PWM_SetRatio16(0,(arg->salida));       //si esta en "fin" desconecta la salida de control
  else
    PWM_SetRatio16(dutytmp,(arg->salida)); //de lo contrario funciona segun el sp

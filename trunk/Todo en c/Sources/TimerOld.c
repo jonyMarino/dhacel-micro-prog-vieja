@@ -20,6 +20,7 @@
 #include "SelfTune.h"
 #include "PID.h"
 #include "Alarmas.h"
+#include "TeclasYDisplay.h"
 
 const int ADTIME = AD_TIME_EN_MILI_SEGUNDOS;
 
@@ -170,8 +171,10 @@ void TI1ms_OnInterrupt(void)
     else 
       screen_cont=0 ;
   
-    DpyAndSwitch();					                               // refresh LCD y scan switch
-
+    //DpyAndSwitch();					                               // refresh LCD y scan switch
+  
+    handlerTeclasYDisplay(&displays);
+    
     //Aqui la vprop
     #ifdef VPROP
       setPWMOut();

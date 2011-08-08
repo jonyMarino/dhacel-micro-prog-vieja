@@ -114,10 +114,18 @@ usar con cantidad de canales 2*/
                     1_  Agregado de las direcciones de ajuste de sensor
                     */  
 //////////////////// Tipo de Aparato /////////////////////////////
+//#define VF   
+  #ifdef VF
+  #define F_VF 1
+  #else
+  #define F_VF 0
+  #endif
+  //#define VF_BKR
+
 //#define debug
 //#define _TEST1 // test del tiempo de conversion del aparato
 //#define HD90
-//#define adquisidor
+  //#define ADQ
 //#define programador
   #ifdef programador
   #define prog_viejo																								 
@@ -136,7 +144,8 @@ usar con cantidad de canales 2*/
 #define AL_3   6
 #define AL_4   7
 
-#define TRETURN 30000  //tiempo de retorno sin boton en ms
+#define TRETURN 6000  //tiempo de retorno sin boton en ms
+
 
 #define CANTIDAD_CANALES 1 /*Cantidad de canales */
 
@@ -189,25 +198,30 @@ usar con cantidad de canales 2*/
 #if CANTIDAD_SAL_CONTROL+ CANTIDAD_SAL_ALARMA>8
 #error El programa fue pensado para hasta 8 salidas, revisar que modificaciones hay que hacer
 #endif
-
+#define MAX_BYTE  255
 #define PARAMETROS 255 /* Cantidad de PARAMETROS que utilizan memoria Flash */
 #define COM_OFFSET 4   /* Offset a partir del cual empiezan las direcciones(de la com. serie) donde estan los parámetros extendidos */
 
 #define MEM_PAGINA 512
+
+#ifdef ADQ
+#define CANT_PAG_ADQ 2
+#define CANT_VALORES 1
+#endif
 
 #define FLASH_PARAMETROS_START 0x4000 /* ep */
 #define FLASH_PARAMETROS_END 0x41FF 
   #ifdef programador
   #define FLASH_PROGRAMADOR_START   FLASH_PARAMETROS_END + 1  /* flash donde estan las adquisiciones */  
   #define FLASH_PROGRAMADOR_END   FLASH_PROGRAMADOR_START + 2560 
-    #ifdef  adquisidor
-    #define FLASH_ADQUISIDOR_START FLASH_PROGRAMADOR_END+1
-    #define FLASH_ADQUISIDOR_END 0x5EFF
+    #ifdef  ADQ
+    #define FLASH_ADQUISIDOR_START 0x5000//FLASH_PROGRAMADOR_END+1
+    #define (FLASH_ADQUISIDOR_START+CANT_PAG_ADQ*MEM_PAGINA) 
 		#endif
 	#else
-	  #ifdef adquisidor
+	  #ifdef ADQ
 	  #define FLASH_ADQUISIDOR_START  FLASH_PARAMETROS_END + 1
-    #define FLASH_ADQUISIDOR_END 0x5EFF
+    #define FLASH_ADQUISIDOR_END (FLASH_ADQUISIDOR_START+CANT_PAG_ADQ*MEM_PAGINA) 
     #endif
   #endif
   
@@ -223,7 +237,7 @@ usar con cantidad de canales 2*/
 #define CANTIDAD_DISPLAYS 2	 /* Numero de displays */
 
 ////////////////////VISUALIZACION//////////////////////////////////
-#define MAX_DIGITOS 16 /* Tamaño del texto más largo*/
+#define MAX_DIGITOS 20 /* Tamaño del texto más largo*/
 #define TIME_SCROLL 200 /* multiplicador de tiempo de scroling*/
 #define MAIN_TEXT_PERIOD 4000 /* periodo del cambio de mensaje en el display inferior para la pantalla Main*/
 #define MAIN_TEXT_TIME 2000 /* tiempo que estará el mensaje en el display inferior para la pantalla Main*/
@@ -250,5 +264,5 @@ usar con cantidad de canales 2*/
 #define ERR_UF 2						 /*Error de la funcion de linealizacion*/
 
 
-  #define numver "A0411 dh101c 3AL   "
-  #define tipoEquipo "   Ct   "
+  #define numver "1S04"
+  #define tipoEquipo "0811"

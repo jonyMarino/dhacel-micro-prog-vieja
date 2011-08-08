@@ -97,6 +97,7 @@
 #include "Alarmas.h"
 #include "LoopDeControlYAlarmas.h"
 #include "TimeOut.h"
+#include "TeclasYDisplay.h"
 
  #pragma CONST_SEG DEFAULT
 ////////////////////////////////////////////////////////////////////////////
@@ -132,40 +133,37 @@ SensorRpmConf confRpm;
 
 //salidas de control
 struct ArgControl _controles[CANTIDAD_SAL_CONTROL]={
-  0,0,outc1
+  0,0,outc1,
+  #if CANTIDAD_SAL_CONTROL>1
+  1,0,outc2
+  #endif
 };
 
 //salidas de Alarma
-struct ArgAlarma _alarmas[ALARMAS_CH1]={
-  0,0,outa1
+struct ArgAlarma _Alarmas[ALARMAS_CH1]={
+  0,0,outa1,
+  #if ALARMAS_CH1>1
+  0,1,outa2,
+  #endif
+  #if ALARMAS_CH1>2
+  0,2,outa3
+  #endif
 };
 
 struct ArgLoop argLoop={
-   _controles,_alarmas,CANTIDAD_CANALES,ALARMAS_CH1
+  _controles,_Alarmas,CANTIDAD_CANALES,ALARMAS_CH1
 };
 
 
 
-#if CANT_VALORES == 2  && CANTIDAD_CANALES == 2
-datoAdq valores[MAX_CANTIDAD_VALORES]={ 
-    {(int*)&ValoresCalculados[0],0},
-    {(int*)&ValoresCalculados[1],1},
-  };
-#elif CANT_VALORES == 2
-datoAdq valores[MAX_CANTIDAD_VALORES]={ 
-    {(int*)&ValoresCalculados[0],0},
-    {(int*)&SetPoint[0],0},
-  };
-#else
-datoAdq valores[MAX_CANTIDAD_VALORES]={ 
-    {(int*)&ValoresCalculados[0],0},
-};
-#endif  
+
 
  
 
 void main(void)
 { 
+  
+  /*Inicializacion de los registros del micro*/
   
   PE_low_level_init();
  
@@ -179,12 +177,12 @@ void main(void)
   PTSL_PutBit(0,TRUE);    //pongo en 1 la referencia del Schmit trigger
  #endif 
   
-  System_init();
+ /*Inicializacion del reloj de tiempo real*/ 
+ System_init();
   
-  intLoopControlYAlarmas(&argLoop);
   
  #ifdef _PRINTER
-   
+ /*Inicializacion del Printer*/  
   _confPrint_.direccion = PRom[R_PrnDireccion];
   _confPrint_.fuente = PRom[R_PrnFuente];
   mipConf.intervalo = PRom[R_PrnIntervalo];
@@ -205,7 +203,7 @@ void main(void)
   
   
  #ifdef RPM
-  
+  /*Inicializacion del Rpm*/
   confRpm.iDecimales=PRom[R_Decimales];
   confRpm.iFiltro=PRom[R_Filtro1];
   confRpm.pulsosPorVuelta=PRom[R_Rpm];
@@ -216,16 +214,25 @@ void main(void)
   
  #endif
 
-  setEstateAutoTune();
+ /*Seteo el estado de autoSintonia*/
+ setEstateAutoTune();
 
  #ifdef INTEGRADOR
-  intIntegrador()
+ /*Inicializacion del integrador*/
+  intIntegrador();
   getValueFlash();
  #endif
 
  #ifdef programador
-  Prog_Init();                          // Inicializacion del programador  
+  /*Inicializacion del programador*/  
+  Prog_Init();                         
  #endif
+ 
+ #ifdef VF
+ /*Inicializacion del VF*/  
+  intVF();
+ #endif 
+ 
  		  
  #ifdef RPM   
  	setLimitesRPM ();
@@ -234,6 +241,8 @@ void main(void)
  #endif
  
   resetPWM();
+
+  initDisplay(&displays);
 
   Boxes_Init(); 
 
@@ -244,14 +253,25 @@ void main(void)
   for(;;)
   {    
   
+  /*Tomo la tecla Presionada*/
   Tecla=get_key();
   
+  /*Ejecuto las funciones para presentar los Boxes*/
   executeBoxes();
   
+  /*Ejecuto el loop de control y alarmas*/
+  loopDeControlYAlarmas(&argLoop);
+  
+  /*Ejecuto methods agregados dinamicamentes*/
   executeMethods(ListaPrincipal);
   
+  /*Proceso teclas de los programadores*/
   #ifdef programador
   procesaTeclasProg();
+  #endif
+  
+  #ifdef VF
+  ProcesoTeclasVF();
   #endif
   
   isTimeReturnPrincipal();

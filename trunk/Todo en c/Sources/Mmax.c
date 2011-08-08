@@ -30,10 +30,11 @@ void calculoMmax (){
 void mantenerMaxIndicacion (void){
   
   if(flagMmax==FALSE){
-     
-     Pasar_Numero(getValCalculado(0),0,DotNum[0]);  
+     PresentarValor(getValCalculado(0),0);
+     //Pasar_Numero(getValCalculado(0),0,DotNum[0]);  
   } else {
-      Pasar_Numero(bufferMmax,0,DotNum[0]);   
+      PresentarValor(bufferMmax,0);
+      //Pasar_Numero(bufferMmax,0,DotNum[0]);   
   }
 }
 

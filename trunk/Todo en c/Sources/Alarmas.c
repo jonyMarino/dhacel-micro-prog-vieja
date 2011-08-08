@@ -10,8 +10,9 @@
 #include "Programador.h"
 #include "PID.h"
 #include "teclas.h"
+#include "vfboxes.h"
 
-int duty_alar_ch[CANTIDAD_CANALES]={0};
+int duty_alar_ch[ALARMAS_CH1]={0};
 bool flagAlarmaConet = FALSE;
 bool flagAlarmaEoC=FALSE;
 
@@ -61,7 +62,7 @@ switch (t_sp_alarma((arg->NroAlarma))){
     
 #ifdef VF
     case _eoc:
-        if(getStatusVF == ENDVF && tecla_d!=1){
+        if(getModeVF == ENDVF && tecla_d!=1){
             vxalar = 30000;
             flagAlarmaConet=TRUE;
         }else
@@ -157,7 +158,7 @@ if (vxalar < -30000)
      setPWM_period(PWM_Anl,(arg->salida));		
   else setPWM_period(PRom[R_Per+((arg->NroControl))],(arg->salida));
  
-  }else if(getStatusVF == ENDVF)  //si estoy en "end" y no es EoC desconecto la alarma
+  }else if(getModeVF == ENDVF)  //si estoy en "end" y no es EoC desconecto la alarma
     PWM_SetRatio16(0,(arg->salida));
   else{
    PWM_SetRatio16(duty_alar_ch[((arg->NroAlarma))],(arg->salida));  

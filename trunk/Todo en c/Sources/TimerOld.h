@@ -9,6 +9,7 @@
 #define REST 0
 
 extern bool DSave;
+extern bool SaveNow;
 extern word screen_cont;
 
 /*																			 

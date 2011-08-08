@@ -15,7 +15,6 @@
 extern const Textual TipoSensor1;
 extern const Numerico Offset1;
 extern const Numerico Ganancia1;
-//extern constTextual Filtro1;
 extern const Numerico Filtro1;
 extern const Textual Comunicacion;
 

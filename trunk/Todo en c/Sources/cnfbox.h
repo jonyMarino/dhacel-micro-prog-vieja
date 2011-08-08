@@ -5,9 +5,17 @@
 #include "stddef.h"
 #include "Mydefines.h"
 
-
-typedef void (**PunteroF)(void);
 #define NO_FUNCTION NULL
+typedef void (**PunteroF)(void);
+
+typedef enum{
+  Titulos,
+  Textuales,
+  Numericos,
+  NumericosRO,
+  Principal
+}TipoBox;
+
 /* definicion de la estructura de dato de los Boxes*/         
 /*******************************************************/
 typedef const struct{
@@ -306,19 +314,14 @@ typedef enum{BL1,BL2,BL3,BL4,VER_DIF}TVersion;
 
 #ifdef VF_PROG
 extern const NumericoRO Principal1;
+extern const Numerico Principal1_VF_PROG;
 #else
 extern const Numerico Principal1;
 #endif
 
 extern const Numerico C1SP;
 
-#ifdef VF_PROG
-extern const Numerico Principal1_VF_PROG;
-#endif
 
-#ifdef RPM
- extern struct SensorRpm sensorRPM;
-#endif
 
 
 #ifdef DOBLE_SP
@@ -373,4 +376,6 @@ extern const Titulo Calibracion;
 extern const Titulo Setting;
 extern const Numerico Codigo1;
 extern const Titulo alarmas;
+extern const Titulo Sintonia;
+
 #endif

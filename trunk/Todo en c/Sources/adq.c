@@ -27,6 +27,23 @@ long indexGlobal;
 struct RlxMTimer * _Rlxtimer;
 struct Method* _Method;
 
+#if CANT_VALORES == 2  && CANTIDAD_CANALES == 2
+datoAdq valores[MAX_CANTIDAD_VALORES]={ 
+    {(int*)&ValoresCalculados[0],0},
+    {(int*)&ValoresCalculados[1],1},
+  };
+#elif CANT_VALORES == 2
+datoAdq valores[MAX_CANTIDAD_VALORES]={ 
+    {(int*)&ValoresCalculados[0],0},
+    {(int*)&SetPoint[0],0},
+  };
+#else
+datoAdq valores[MAX_CANTIDAD_VALORES]={ 
+    {(int*)&ValoresCalculados[0],0},
+};
+#endif  
+
+
 /*Esta funcion permite un valor y elejir la posicion-
  actualmente no se utiliza
 */
